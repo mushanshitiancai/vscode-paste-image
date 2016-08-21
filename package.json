@@ -1,0 +1,46 @@
+{
+  "name": "vscode-paste-image",
+  "displayName": "Paste Image",
+  "description": "paste image from clipboard directly",
+  "version": "0.0.1",
+  "publisher": "mushan",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.pasteImage"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.pasteImage",
+        "title": "Paste Image"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.pasteImage",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "dependencies": {
+    "copy-paste": "^1.2.0",
+    "moment": "^2.14.1"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.5",
+    "vscode": "^0.11.0"
+  }
+}
