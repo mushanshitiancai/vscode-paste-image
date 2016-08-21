@@ -4,6 +4,22 @@
   "description": "paste image from clipboard directly",
   "version": "0.0.1",
   "publisher": "mushan",
+  "author": {
+    "name": "mushan",
+    "email": "mushanmail@126.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
+  },
+  "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
+  "bugs": {
+    "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
+  },
+  "galleryBanner": {
+    "color": "#252526",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.0.0"
   },
