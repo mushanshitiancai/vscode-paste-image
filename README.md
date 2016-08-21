@@ -4,7 +4,7 @@ Paste image directly from clipboard to markdown(or other file)!
 
 (Only for MacOS for now)
 
-![](./res/vscode-paste-image.gif)
+![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
 
 ## Usage
 
