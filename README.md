@@ -20,6 +20,9 @@ when you editing a markdown, it will pasted as markdown image link format `![]()
 
 - [ ] support config
 - [ ] support config relative/absolute path
+- [ ] support config image name pattern
+- [ ] support use the selected text as the image name
+- [ ] support win & linux
 
 ## License
 

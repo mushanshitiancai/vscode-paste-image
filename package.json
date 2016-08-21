@@ -16,10 +16,17 @@
   "bugs": {
     "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
   },
+  "icon": "res/icon.svg",
   "galleryBanner": {
     "color": "#252526",
     "theme": "dark"
   },
+  "tags": [
+    "paste",
+    "image",
+    "markdown",
+    "paste image"
+  ],
   "engines": {
     "vscode": "^1.0.0"
   },
