@@ -34,7 +34,7 @@ class Paster {
 
         // save image and insert to current edit file
         this.saveClipboardImageToFileAndGetPath(imagePath,imagePath => {
-            if(imagePath === 'no image\n'){
+            if(imagePath === 'no image'){
                 vscode.window.showInformationMessage('There is not a image in clipboard.');
                 return;
             }
