@@ -67,7 +67,7 @@ class Paster {
      */
     private static saveClipboardImageToFileAndGetPath(imagePath,cb:(imagePath:string)=>void) {
         if (!imagePath) return;
-        let scriptPath = path.join(__dirname, '../../src/util/mac.applescript');
+        let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
         let ascript = spawn('osascript', [scriptPath, imagePath]);
         ascript.on('exit', function (code, signal) {
