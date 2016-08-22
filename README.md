@@ -10,11 +10,23 @@ Paste image directly from clipboard to markdown(or other file)!
 
 1. capture screen to clipboard
 2. Open the command palette: `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac)
-3. Type: Paste Image
+3. Type: "Paste Image" or you can use default keyboard binding: `Cmd+Alt+V`.
+4. Image will be saved in the folder that contains current editing file
+5. The relative path will be paste to current editing file 
 
-or you can use default keyboard binding: `Cmd+Alt+V`.
+## Format
 
-when you editing a markdown, it will pasted as markdown image link format `![]()`, in other file, it just paste the image's path.
+### File name format
+
+The image is saved in this format: "Y-MM-DD-HH-mm-ss.png".It will be configurable in future version. 
+
+### File link format
+
+When you editing a markdown, it will pasted as markdown image link format `![](imagePath)`, in other file, it just paste the image's path.
+
+## Contact
+
+If you have some any question or advice, Welcome to [issue](https://github.com/mushanshitiancai/vscode-paste-image/issues)
 
 ## TODO
 

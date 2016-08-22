@@ -21,11 +21,12 @@
     "color": "#252526",
     "theme": "dark"
   },
-  "tags": [
+  "keywords": [
     "paste",
     "image",
     "markdown",
-    "paste image"
+    "paste image",
+    "keybindings"
   ],
   "engines": {
     "vscode": "^1.0.0"
