@@ -87,7 +87,10 @@ class Paster {
             let electronAppPath = path.join(__dirname, '../../res/electron-app');
             var proc = child_process.spawn(electron,[electronAppPath,imagePath]);
             proc.stdout.on("data",function(data){
-                cb(data.toString().trim());
+                var ret:string = data.toString().trim();
+                if(ret.length != 0) {
+                    cb(ret);
+                }
             })
             proc.on("close",function(){});
         }
