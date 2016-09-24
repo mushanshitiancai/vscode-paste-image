@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "copy-paste": "^1.2.0",
+    "electron": "^1.4.1",
     "moment": "^2.14.1"
   },
   "devDependencies": {

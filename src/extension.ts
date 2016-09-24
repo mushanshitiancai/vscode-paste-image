@@ -3,10 +3,10 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import {spawn} from 'child_process';
 import * as moment from 'moment';
+const electron = require('electron');
+import * as child_process from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Congratulations, your extension "vscode-paste-image" is now active!');
-
     let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
         Paster.paste();
     });
@@ -38,6 +38,10 @@ class Paster {
                 vscode.window.showInformationMessage('There is not a image in clipboard.');
                 return;
             }
+            if(imagePath === 'save fail'){
+                vscode.window.showInformationMessage('Save image fail.');
+                return;
+            }
 
             imagePath = this.renderFilePath(editor.document.languageId,filePath,imagePath);
 
@@ -67,16 +71,26 @@ class Paster {
      */
     private static saveClipboardImageToFileAndGetPath(imagePath,cb:(imagePath:string)=>void) {
         if (!imagePath) return;
-        let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
-        let ascript = spawn('osascript', [scriptPath, imagePath]);
-        ascript.on('exit', function (code, signal) {
-            // console.log('exit',code,signal);
-        })
+        if(process.platform !== 'darwin'){
+            let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
-        ascript.stdout.on('data', function (data:Buffer) {
-            cb(data.toString().trim());
-        })
+            let ascript = spawn('osascript', [scriptPath, imagePath]);
+            ascript.on('exit', function (code, signal) {
+                // console.log('exit',code,signal);
+            })
+
+            ascript.stdout.on('data', function (data:Buffer) {
+                cb(data.toString().trim());
+            })
+        }else{
+            let electronAppPath = path.join(__dirname, '../../res/electron-app');
+            var proc = child_process.spawn(electron,[electronAppPath,imagePath]);
+            proc.stdout.on("data",function(data){
+                cb(data.toString().trim());
+            })
+            proc.on("close",function(){});
+        }
     }
 
     /**
