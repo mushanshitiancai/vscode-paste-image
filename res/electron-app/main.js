@@ -5,7 +5,6 @@ app.on('ready', saveClipboard)
 
 function saveClipboard(){
     var imagePath = process.argv[2];
-    log("imagePath: "+imagePath);
 
     var image = clipboard.readImage();
     if(!image || image.isEmpty()) 
@@ -24,8 +23,4 @@ function saveClipboard(){
 function quitWithResult(msg){
     console.log(msg);
     app.quit();
-}
-
-function log(msg){
-    console.error(msg);
 }
