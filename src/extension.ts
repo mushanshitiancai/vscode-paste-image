@@ -33,7 +33,7 @@ class Paster {
         let imagePath = this.getImagePath(filePath);
 
         // save image and insert to current edit file
-        this.saveClipboardImageToFileAndGetPath(imagePath,imagePath => {
+        this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
             if(imagePath === 'no image'){
                 vscode.window.showInformationMessage('There is not a image in clipboard.');
                 return;
@@ -67,16 +67,40 @@ class Paster {
      */
     private static saveClipboardImageToFileAndGetPath(imagePath,cb:(imagePath:string)=>void) {
         if (!imagePath) return;
-        let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
-        let ascript = spawn('osascript', [scriptPath, imagePath]);
-        ascript.on('exit', function (code, signal) {
-            // console.log('exit',code,signal);
-        })
+        if (process.platform === 'win32') {
+            // Windows
+            const scriptPath = path.join(__dirname, '../../res/pc.ps1');
+            const powershell = spawn('powershell', [
+                '-noprofile', 
+                '-noninteractive',
+                '-nologo',
+                '-sta',
+                '-executionpolicy','unrestricted',
+                '-windowstyle', 'hidden',
+                '-file', scriptPath,
+                imagePath
+            ]);
+            powershell.on('exit', function(code, signal) {
+                // console.log('exit', code, signal);
+            });
+            powershell.stdout.on('data', function (data: Buffer) {
+                cb(data.toString().trim());
+            });
+        }
+        else {
+            // Mac
+            let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
-        ascript.stdout.on('data', function (data:Buffer) {
-            cb(data.toString().trim());
-        })
+            let ascript = spawn('osascript', [scriptPath, imagePath]);
+            ascript.on('exit', function (code, signal) {
+                // console.log('exit',code,signal);
+            });
+
+            ascript.stdout.on('data', function (data:Buffer) {
+                cb(data.toString().trim());
+            });
+        }
     }
 
     /**
