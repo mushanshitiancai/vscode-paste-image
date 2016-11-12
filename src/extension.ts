@@ -20,6 +20,12 @@ export function deactivate() {
 class Paster {
 
     public static paste() {
+        let platform = process.platform;        
+        if(platform != 'win32' && platform != 'darwin'){
+            vscode.window.showInformationMessage('Not support ' + platform + ' for now.');
+            return;
+        }
+
         let editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
@@ -69,7 +75,8 @@ class Paster {
     private static saveClipboardImageToFileAndGetPath(imagePath,cb:(imagePath:string)=>void) {
         if (!imagePath) return;
 
-        if (process.platform === 'win32') {
+        let platform = process.platform;
+        if (platform === 'win32') {
             // Windows
             const scriptPath = path.join(__dirname, '../../res/pc.ps1');
             const powershell = spawn('powershell', [
@@ -89,7 +96,7 @@ class Paster {
                 cb(data.toString().trim());
             });
         }
-        else {
+        else if(platform === 'darwin'){
             // Mac
             let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
