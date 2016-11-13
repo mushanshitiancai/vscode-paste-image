@@ -20,12 +20,6 @@ export function deactivate() {
 class Paster {
 
     public static paste() {
-        let platform = process.platform;        
-        if(platform != 'win32' && platform != 'darwin'){
-            vscode.window.showInformationMessage('Not support ' + platform + ' for now.');
-            return;
-        }
-
         let editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
