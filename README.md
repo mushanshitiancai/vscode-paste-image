@@ -2,7 +2,7 @@
 
 Paste image directly from clipboard to markdown(or other file)!
 
-(for MacOS & Windows for now)
+Support Mac/Windows/Linux!
 
 ![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
 
@@ -30,12 +30,13 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 
 ## TODO
 
+- [x] support win(by @kivle)
+- [x] support linux
+- [ ] support use the selected text as the image name
 - [ ] support config
 - [ ] support config relative/absolute path
 - [ ] support config image name pattern
-- [ ] support use the selected text as the image name
-- [x] support win(by @kivle)
-- [ ] support linux
+
 
 ## License
 

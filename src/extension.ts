@@ -20,6 +20,7 @@ export function deactivate() {
 class Paster {
 
     public static paste() {
+        // get current edit file path
         let editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
@@ -27,10 +28,20 @@ class Paster {
         if (!fileUri) return;
         if (fileUri.scheme === 'untitled') {
             vscode.window.showInformationMessage('Before paste image, you need to save current edit file first.');
+            return;
         }
 
+        // get selection as image file name, need check
+        var selection = editor.selection;
+        var selectText = editor.document.getText(selection);
+        if(selectText && !/^[\w\-.]+$/.test(selectText)){
+            vscode.window.showInformationMessage('Your selection is not a valid file name!');
+            return;
+        }
+
+        // get image destination path
         let filePath = fileUri.fsPath;
-        let imagePath = this.getImagePath(filePath);
+        let imagePath = this.getImagePath(filePath,selectText);
 
         // save image and insert to current edit file
         this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
@@ -54,9 +65,15 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath): string {
+    public static getImagePath(filePath:string,selectText:string): string {
         let folderPath = path.dirname(filePath);
-        let imageFileName = moment().format("Y-MM-DD-HH-mm-ss") + ".png";
+        let imageFileName = "";
+        if(!selectText){
+            imageFileName = moment().format("Y-MM-DD-HH-mm-ss") + ".png";
+        }else{
+            imageFileName = selectText + ".png";
+        }
+        
         let imageFilePath = path.join(folderPath, imageFileName);
 
         return imageFilePath;
