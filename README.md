@@ -2,7 +2,7 @@
 
 Paste image directly from clipboard to markdown(or other file)!
 
-Support Mac/Windows/Linux!
+**Support Mac/Windows/Linux!**
 
 ![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
 
@@ -18,7 +18,8 @@ Support Mac/Windows/Linux!
 
 ### File name format
 
-The image is saved in this format: "Y-MM-DD-HH-mm-ss.png".It will be configurable in future version. 
+If you selected some text in editor, then extension will use it as the image file name.
+If not the image will be saved in this format: "Y-MM-DD-HH-mm-ss.png". 
 
 ### File link format
 
@@ -32,7 +33,7 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 
 - [x] support win(by @kivle)
 - [x] support linux
-- [ ] support use the selected text as the image name
+- [x] support use the selected text as the image name
 - [ ] support config
 - [ ] support config relative/absolute path
 - [ ] support config image name pattern
