@@ -108,6 +108,24 @@ class Paster {
             ascript.stdout.on('data', function (data:Buffer) {
                 cb(data.toString().trim());
             });
+        } else {
+            // Linux 
+
+            let scriptPath = path.join(__dirname, '../../res/linux.sh');
+            
+            let ascript = spawn('sh', [scriptPath, imagePath]);
+            ascript.on('exit', function (code, signal) {
+                // console.log('exit',code,signal);
+            });
+
+            ascript.stdout.on('data', function (data:Buffer) {
+                let result = data.toString().trim();
+                if(result == "no xclip"){
+                    vscode.window.showInformationMessage('You need to install xclip command first.');
+                    return;
+                }
+                cb(result);
+            });
         }
     }
 
