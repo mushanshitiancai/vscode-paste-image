@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import {spawn} from 'child_process';
 import * as moment from 'moment';
 
@@ -41,44 +42,64 @@ class Paster {
 
         // get image destination path
         let filePath = fileUri.fsPath;
-        let imagePath = this.getImagePath(filePath,selectText);
+        let imagePath = this.getImagePath(filePath, selectText);
 
-        // save image and insert to current edit file
-        this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
-            if(!imagePath) return;
-            if(imagePath === 'no image'){
-                vscode.window.showInformationMessage('There is not a image in clipboard.');
-                return;
+        let imageDir = path.dirname(imagePath);
+        fs.exists(imageDir, (exists) => {
+            if (! exists) {
+                fs.mkdir(imageDir);
             }
 
-            imagePath = this.renderFilePath(editor.document.languageId,filePath,imagePath);
-
-            editor.edit(edit => {
-                let current = editor.selection;
-                
-                if(current.isEmpty){
-                    edit.insert(current.start,imagePath);
-                }else{
-                    edit.replace(current,imagePath);
+            // save image and insert to current edit file
+            this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
+                if(!imagePath) return;
+                if(imagePath === 'no image'){
+                    vscode.window.showInformationMessage('There is not a image in clipboard.');
+                    return;
                 }
-            })
+
+                imagePath = this.renderFilePath(editor.document.languageId,filePath,imagePath);
+
+                editor.edit(edit => {
+                    let current = editor.selection;
+                    
+                    if(current.isEmpty){
+                        edit.insert(current.start,imagePath);
+                    }else{
+                        edit.replace(current,imagePath);
+                    }
+                })
+            });
         });
     }
 
-    public static getImagePath(filePath:string,selectText:string): string {
-        let folderPath = path.dirname(filePath);
+    public static getImagePath(filePath:string, selectText:string): string {
+        // image file name
         let imageFileName = "";
-        if(!selectText){
+        if (! selectText) {
             imageFileName = moment().format("Y-MM-DD-HH-mm-ss") + ".png";
-        }else{
+        } else {
             imageFileName = selectText + ".png";
         }
-        
-        let imageFilePath = path.join(folderPath, imageFileName);
 
-        return imageFilePath;
+        // image output path
+        let folderPath = path.dirname(filePath);
+        let folderPathFromConfig = "";
+        let imagePath = "";
+        let pasteImageConfig = vscode.workspace.getConfiguration('pasteImage');
+        if (pasteImageConfig && pasteImageConfig.hasOwnProperty('path')) {
+            folderPathFromConfig = pasteImageConfig['path'];
+        }
+
+        // generate image path
+        if (path.isAbsolute(folderPathFromConfig)) {
+            imagePath = path.join(folderPathFromConfig, imageFileName);
+        } else {
+            imagePath = path.join(folderPath, folderPathFromConfig, imageFileName);
+        }
+
+        return imagePath;
     }
-
 
     /**
      * use applescript to save image from clipboard and get file path
