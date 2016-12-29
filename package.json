@@ -1,77 +1,81 @@
 {
-    "name": "vscode-paste-image",
-    "displayName": "Paste Image",
-    "description": "paste image from clipboard directly",
-    "version": "0.2.0",
-    "publisher": "mushan",
-    "author": {
-        "name": "mushan",
-        "email": "mushanmail@126.com"
+  "name": "vscode-paste-image",
+  "displayName": "Paste Image",
+  "description": "paste image from clipboard directly",
+  "version": "0.2.0",
+  "publisher": "mushan",
+  "author": {
+    "name": "mushan",
+    "email": "mushanmail@126.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
+  },
+  "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
+  "bugs": {
+    "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
+  },
+  "icon": "res/icon.svg",
+  "galleryBanner": {
+    "color": "#252526",
+    "theme": "dark"
+  },
+  "keywords": [
+    "paste",
+    "image",
+    "markdown",
+    "paste image",
+    "keybindings"
+  ],
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.pasteImage"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Paste Image Configuration",
+      "properties": {
+        "pasteImage.path": {
+          "type": "string",
+          "default": "./",
+          "description": "The destination to save image file."
+        }
+      }
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
-    },
-    "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
-    "bugs": {
-        "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
-    },
-    "icon": "res/icon.svg",
-    "galleryBanner": {
-        "color": "#252526",
-        "theme": "dark"
-    },
-    "keywords": [
-        "paste",
-        "image",
-        "markdown",
-        "paste image",
-        "keybindings"
+    "commands": [
+      {
+        "command": "extension.pasteImage",
+        "title": "Paste Image"
+      }
     ],
-    "engines": {
-        "vscode": "^1.0.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:extension.pasteImage"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "Paste Image Configuration",
-            "properties": {
-                "pasteImage.path": {
-                    "type": "string",
-                    "default": "./",
-                    "description": "The destination to save image file."
-                }
-            }
-        },
-        "commands": [{
-            "command": "extension.pasteImage",
-            "title": "Paste Image"
-        }],
-        "keybindings": [{
-            "command": "extension.pasteImage",
-            "key": "ctrl+alt+v",
-            "mac": "cmd+alt+v",
-            "when": "editorTextFocus"
-        }]
-    },
-    "scripts": {
-        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "dependencies": {
-        "copy-paste": "^1.2.0",
-        "moment": "^2.14.1"
-    },
-    "devDependencies": {
-        "typescript": "^1.8.5",
-        "vscode": "^0.11.0"
-    }
+    "keybindings": [
+      {
+        "command": "extension.pasteImage",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "dependencies": {
+    "copy-paste": "^1.2.0",
+    "moment": "^2.14.1"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.5",
+    "vscode": "^0.11.0"
+  }
 }
