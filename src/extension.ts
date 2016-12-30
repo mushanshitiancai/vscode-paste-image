@@ -41,15 +41,15 @@ class Paster {
         }
 
         // get image destination path
+        let folderPathFromConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
+        if (folderPathFromConfig && (folderPathFromConfig.length !== folderPathFromConfig.trim().length)) {
+            vscode.window.showErrorMessage('The specified path is invalid. "' + folderPathFromConfig + '"');
+            return;
+        }
         let filePath = fileUri.fsPath;
-        let imagePath = this.getImagePath(filePath, selectText);
+        let imagePath = this.getImagePath(filePath, selectText, folderPathFromConfig);
 
-        let imageDir = path.dirname(imagePath);
-        fs.exists(imageDir, (exists) => {
-            if (! exists) {
-                fs.mkdir(imageDir);
-            }
-
+        this.createImageDirWithImagePath(imagePath).then(imagePath => {
             // save image and insert to current edit file
             this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
                 if(!imagePath) return;
@@ -68,12 +68,15 @@ class Paster {
                     }else{
                         edit.replace(current,imagePath);
                     }
-                })
+                });
             });
+        }).catch(err => {
+            vscode.window.showErrorMessage('Failed make folder.');
+            return;
         });
     }
 
-    public static getImagePath(filePath:string, selectText:string): string {
+    public static getImagePath(filePath:string, selectText:string, folderPathFromConfig:string): string {
         // image file name
         let imageFileName = "";
         if (! selectText) {
@@ -84,12 +87,7 @@ class Paster {
 
         // image output path
         let folderPath = path.dirname(filePath);
-        let folderPathFromConfig = "";
         let imagePath = "";
-        let pasteImageConfig = vscode.workspace.getConfiguration('pasteImage');
-        if (pasteImageConfig && pasteImageConfig.hasOwnProperty('path')) {
-            folderPathFromConfig = pasteImageConfig['path'];
-        }
 
         // generate image path
         if (path.isAbsolute(folderPathFromConfig)) {
@@ -99,6 +97,30 @@ class Paster {
         }
 
         return imagePath;
+    }
+
+    /**
+     * create directory for image when directory does not exist
+     */
+    private static createImageDirWithImagePath(imagePath:string) {
+        return new Promise((resolve, reject) => {
+            let imageDir = path.dirname(imagePath);
+
+            fs.exists(imageDir, (exists) => {
+                if (exists) {
+                    resolve(imagePath);
+                    return;
+                }
+
+                fs.mkdir(imageDir, (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(imagePath);
+                });
+            });
+        });
     }
 
     /**
