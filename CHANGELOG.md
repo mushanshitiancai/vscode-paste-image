@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.0 (December 31, 2016)
+
+- Feature: Support config the path(absolute or relative) to save image.(@ysknkd in #4)
+
 ## 0.2.0 (November 13, 2016)
 
 - Feature: Add linux support by xclip
