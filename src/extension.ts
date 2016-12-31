@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import {spawn} from 'child_process';
 import * as moment from 'moment';
 
@@ -40,45 +41,87 @@ class Paster {
         }
 
         // get image destination path
+        let folderPathFromConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
+        if (folderPathFromConfig && (folderPathFromConfig.length !== folderPathFromConfig.trim().length)) {
+            vscode.window.showErrorMessage('The specified path is invalid. "' + folderPathFromConfig + '"');
+            return;
+        }
         let filePath = fileUri.fsPath;
-        let imagePath = this.getImagePath(filePath,selectText);
+        let imagePath = this.getImagePath(filePath, selectText, folderPathFromConfig);
 
-        // save image and insert to current edit file
-        this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
-            if(!imagePath) return;
-            if(imagePath === 'no image'){
-                vscode.window.showInformationMessage('There is not a image in clipboard.');
-                return;
-            }
-
-            imagePath = this.renderFilePath(editor.document.languageId,filePath,imagePath);
-
-            editor.edit(edit => {
-                let current = editor.selection;
-                
-                if(current.isEmpty){
-                    edit.insert(current.start,imagePath);
-                }else{
-                    edit.replace(current,imagePath);
+        this.createImageDirWithImagePath(imagePath).then(imagePath => {
+            // save image and insert to current edit file
+            this.saveClipboardImageToFileAndGetPath(imagePath, imagePath => {
+                if(!imagePath) return;
+                if(imagePath === 'no image'){
+                    vscode.window.showInformationMessage('There is not a image in clipboard.');
+                    return;
                 }
-            })
+
+                imagePath = this.renderFilePath(editor.document.languageId,filePath,imagePath);
+
+                editor.edit(edit => {
+                    let current = editor.selection;
+                    
+                    if(current.isEmpty){
+                        edit.insert(current.start,imagePath);
+                    }else{
+                        edit.replace(current,imagePath);
+                    }
+                });
+            });
+        }).catch(err => {
+            vscode.window.showErrorMessage('Failed make folder.');
+            return;
         });
     }
 
-    public static getImagePath(filePath:string,selectText:string): string {
-        let folderPath = path.dirname(filePath);
+    public static getImagePath(filePath:string, selectText:string, folderPathFromConfig:string): string {
+        // image file name
         let imageFileName = "";
-        if(!selectText){
+        if (! selectText) {
             imageFileName = moment().format("Y-MM-DD-HH-mm-ss") + ".png";
-        }else{
+        } else {
             imageFileName = selectText + ".png";
         }
-        
-        let imageFilePath = path.join(folderPath, imageFileName);
 
-        return imageFilePath;
+        // image output path
+        let folderPath = path.dirname(filePath);
+        let imagePath = "";
+
+        // generate image path
+        if (path.isAbsolute(folderPathFromConfig)) {
+            imagePath = path.join(folderPathFromConfig, imageFileName);
+        } else {
+            imagePath = path.join(folderPath, folderPathFromConfig, imageFileName);
+        }
+
+        return imagePath;
     }
 
+    /**
+     * create directory for image when directory does not exist
+     */
+    private static createImageDirWithImagePath(imagePath:string) {
+        return new Promise((resolve, reject) => {
+            let imageDir = path.dirname(imagePath);
+
+            fs.exists(imageDir, (exists) => {
+                if (exists) {
+                    resolve(imagePath);
+                    return;
+                }
+
+                fs.mkdir(imageDir, (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(imagePath);
+                });
+            });
+        });
+    }
 
     /**
      * use applescript to save image from clipboard and get file path

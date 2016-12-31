@@ -39,6 +39,17 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Paste Image Configuration",
+      "properties": {
+        "pasteImage.path": {
+          "type": "string",
+          "default": "./",
+          "description": "The destination to save image file."
+        }
+      }
+    },
     "commands": [
       {
         "command": "extension.pasteImage",
