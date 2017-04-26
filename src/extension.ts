@@ -46,8 +46,13 @@ class Paster {
             vscode.window.showErrorMessage('The specified path is invalid. "' + folderPathFromConfig + '"');
             return;
         }
+
+        //Configuration: should save image to a directory whose name is the same as current document.
+        //This can help classification in use like writing article with hexo. 
+        let shouldSaveToDirectoryWithTheSameNameOfCurrentFile 
+         = vscode.workspace.getConfiguration('pasteImage')['shouldSaveToDirectoryWithTheSameNameOfCurrentFile'];
         let filePath = fileUri.fsPath;
-        let imagePath = this.getImagePath(filePath, selectText, folderPathFromConfig);
+        let imagePath = this.getImagePath(filePath, selectText, folderPathFromConfig, shouldSaveToDirectoryWithTheSameNameOfCurrentFile);
 
         this.createImageDirWithImagePath(imagePath).then(imagePath => {
             // save image and insert to current edit file
@@ -76,7 +81,7 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath:string, selectText:string, folderPathFromConfig:string): string {
+    public static getImagePath(filePath:string, selectText:string, folderPathFromConfig:string, shouldSaveToDirectoryWithTheSameNameOfCurrentFile:boolean): string {
         // image file name
         let imageFileName = "";
         if (! selectText) {
@@ -91,10 +96,20 @@ class Paster {
 
         // generate image path
         if (path.isAbsolute(folderPathFromConfig)) {
-            imagePath = path.join(folderPathFromConfig, imageFileName);
-        } else {
-            imagePath = path.join(folderPath, folderPathFromConfig, imageFileName);
+            imagePath = folderPathFromConfig;
         }
+        else {
+            imagePath = path.join(folderPath, folderPathFromConfig);
+        }
+
+        if(shouldSaveToDirectoryWithTheSameNameOfCurrentFile){
+            let basename = path.basename( vscode.window.activeTextEditor.document.fileName);
+            let extname = path.extname( vscode.window.activeTextEditor.document.fileName);
+            let basefilenameWithoutExt = basename.substr(0, basename.length - extname.length);
+            imagePath = path.join(imagePath, basefilenameWithoutExt);
+        }
+
+        imagePath = path.join(imagePath, imageFileName);
 
         return imagePath;
     }

@@ -47,7 +47,12 @@
           "type": "string",
           "default": "./",
           "description": "The destination to save image file."
-        }
+        },
+				"pasteImage.shouldSaveToDirectoryWithTheSameNameOfCurrentFile": {
+					"type": "boolean",
+					"default": false,
+					"description": "Should save image to a directory whose name(no extension) is the same as current document.This can help classification in use like writing an article with hexo."
+				}
       }
     },
     "commands": [
