@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
   },
-  "icon": "res/icon.svg",
+  "icon": "res/icon.png",
   "galleryBanner": {
     "color": "#252526",
     "theme": "dark"

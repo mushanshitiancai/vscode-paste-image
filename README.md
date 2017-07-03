@@ -44,8 +44,8 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support use the selected text as the image name
 - [x] support config (@ysknkd in #4)
 - [x] support config relative/absolute path (@ysknkd in #4)
+- [x] support asciidoc
 - [ ] support config image name pattern
-
 
 ## License
 
