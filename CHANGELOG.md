@@ -7,6 +7,7 @@
 ## 0.9.0 (July 3, 2017)
 
 - Feature: Add `pasteImage.basePath` configuration.
+- Feature: `pasteImage.path` and `pasteImage.basePath` support `${currentFileDir}` and `${projectRoot}` variable.
 - Feature: Add `pasteImage.forceUnixStyleSeparator` configuration.
 - Feature: Add `pasteImage.prefix` configuration.
 - Feature: Add `pasteImage.suffix` configuration.
