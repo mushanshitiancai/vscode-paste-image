@@ -18,20 +18,77 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
 - `pasteImage.path`
 
-    the folder path that image will be saved. Support absolute path and relative path.
+    The destination to save image file.
+    
+    You can use variable `${currentFileDir}`, `${projectRoot}`, `${currentFileName}` and `${currentFileNameWithoutExt}`. 
+    
+    - `${currentFileDir}` will be replace by the path of directory that contain current editing file. 
+    - `${projectRoot}` will be replace by path of the project opened in vscode.
+    - `${currentFileName}` will be replace by current file name with ext.
+    - `${currentFileNameWithoutExt}` will be replace by current file name without ext.
 
-    Default value is `./`, mean save image in the folder contains current file.
+    Default value is `${currentFileDir}`.
+
+- `pasteImage.basePath`
+
+    The base path of image url.
+    
+    You can use variable `${currentFileDir}`, `${projectRoot}`, `${currentFileName}` and `${currentFileNameWithoutExt}`. 
+    
+    - `${currentFileDir}` will be replace by the path of directory that contain current editing file. 
+    - `${projectRoot}` will be replace by path of the project opened in vscode.
+    - `${currentFileName}` will be replace by current file name with ext.
+    - `${currentFileNameWithoutExt}` will be replace by current file name without ext.
+
+    Default value is `${currentFileDir}`.
+
+- `pasteImage.forceUnixStyleSeparator`
+
+    Force set the file separator styel to unix style. If set false, separator styel will follow the system style. 
+    
+    Default is `true`.
+
+- `pasteImage.prefix`
+
+    The string prepend to the resolved image path before paste.
+
+- `pasteImage.suffix`
+
+    The string append to the resolved image path before paste.
+
+## Config Example
+
+I use vscode to edit my hexo blog. The folder struct like this:
+
+```
+blog/source/_posts  (articles)
+blog/source/img     (images)
+```
+
+I want to save all image in `blog/source/img`, and insert image url to article. And hexo will generate `blog/source/` as the website root, so the image url shoud be like `/img/xxx.png`. So I can config pasteImage in `blog/.vscode/setting.json` like this:
+
+```
+"pasteImage.path": "${projectRoot}/source/img",
+"pasteImage.basePath": "${projectRoot}/source",
+"pasteImage.forceUnixStyleSeparator": true,
+"pasteImage.prefix": "/"
+```
 
 ## Format
 
 ### File name format
 
-If you selected some text in editor, then extension will use it as the image file name.
+If you selected some text in editor, then extension will use it as the image file name. The selected text can be a sub path like `subFolder/nameYouWant`.
+
 If not the image will be saved in this format: "Y-MM-DD-HH-mm-ss.png". 
 
 ### File link format
 
-When you editing a markdown, it will pasted as markdown image link format `![](imagePath)`, in other file, it just paste the image's path.
+When you editing a markdown, it will pasted as markdown image link format `![](imagePath)`.
+
+When you editing a asciidoc, it will pasted as asciidoc image link format `image::imagePath[]`.
+
+In other file, it just paste the image's path.
 
 ## Contact
 
@@ -45,7 +102,12 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support config (@ysknkd in #4)
 - [x] support config relative/absolute path (@ysknkd in #4)
 - [x] support asciidoc
-- [ ] support config image name pattern
+- [x] supoort use variable ${projectRoot} and ${currentFileDir} in config
+- [x] support config basePath
+- [x] support config forceUnixStyleSeparator
+- [x] support config prefix
+- [x] support config suffix
+- [ ] support config default image name pattern
 
 ## License
 

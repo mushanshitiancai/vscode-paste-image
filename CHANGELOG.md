@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.9.1 (July 3, 2017)
+
+- Feature: `pasteImage.path` and `pasteImage.basePath` support `${currentFileName}` and `${currentFileNameWithoutExt}` variable.
+
+## 0.9.0 (July 3, 2017)
+
+- Feature: Add `pasteImage.basePath` configuration.
+- Feature: Add `pasteImage.forceUnixStyleSeparator` configuration.
+- Feature: Add `pasteImage.prefix` configuration.
+- Feature: Add `pasteImage.suffix` configuration.
+- Feature: Support selected path as a sub path.
+
 ## 0.4.0 (July 3, 2017)
 
 - Feature: Support AsciiDoc image markup
