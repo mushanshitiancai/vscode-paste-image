@@ -107,6 +107,8 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support config forceUnixStyleSeparator
 - [x] support config prefix
 - [x] support config suffix
+- [x] supoort use variable ${currentFileName} and ${currentFileNameWithoutExt} in config
+- [x] support check if the dest directory is a file
 - [ ] support config default image name pattern
 
 ## License
