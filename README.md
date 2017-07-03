@@ -1,6 +1,6 @@
 # Paste Image
 
-Paste image directly from clipboard to markdown(or other file)!
+Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
 **Support Mac/Windows/Linux!** And support config destination folder.
 

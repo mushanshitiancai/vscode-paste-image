@@ -2,7 +2,7 @@
   "name": "vscode-paste-image",
   "displayName": "Paste Image",
   "description": "paste image from clipboard directly",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "mushan",
   "author": {
     "name": "mushan",
@@ -47,6 +47,11 @@
           "type": "string",
           "default": "./",
           "description": "The destination to save image file."
+        },
+        "pasteImage.separatorStyle": {
+          "type": "string",
+          "default": "system",
+          "description": "The file separator styel.Defalut is \"system\",means follow your system style.You can force set \"unix\" or \"windows\"."
         }
       }
     },

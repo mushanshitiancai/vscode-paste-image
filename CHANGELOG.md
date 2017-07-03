@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.0 (July 3, 2017)
+
+- Feature: Support AsciiDoc image markup
+
 ## 0.3.0 (December 31, 2016)
 
 - Feature: Support config the path(absolute or relative) to save image.(@ysknkd in #4)

@@ -43,7 +43,7 @@ class Paster {
         // get image destination path
         let folderPathFromConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
         if (folderPathFromConfig && (folderPathFromConfig.length !== folderPathFromConfig.trim().length)) {
-            vscode.window.showErrorMessage('The specified path is invalid. "' + folderPathFromConfig + '"');
+            vscode.window.showErrorMessage('The specified path is invalid. "' + folderPathFromConfig + '",please check your config.');
             return;
         }
         let filePath = fileUri.fsPath;
@@ -190,10 +190,13 @@ class Paster {
     public static renderFilePath(languageId:string,docPath:string,imageFilePath:string):string{
         imageFilePath = path.relative(path.dirname(docPath),imageFilePath);
 
-        if(languageId === 'markdown'){
-            return `![](${imageFilePath})`;
-        }else{
-            return imageFilePath;
+        switch(languageId){
+            case "markdown":
+                return `![](${imageFilePath})`
+            case "asciidoc":
+                return `image::${imageFilePath}[]`
+            default:
+                return imageFilePath;
         }
     }
 }
