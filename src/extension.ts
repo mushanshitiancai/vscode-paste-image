@@ -81,6 +81,13 @@ class Paster {
 
         let imagePath = this.getImagePath(filePath, selectText, this.folderPathFromConfig);
 
+        let imageDirPath = path.dirname(imagePath);
+        let stat = fs.statSync(imageDirPath)
+        if(stat.isFile()){
+            vscode.window.showErrorMessage(`The image dest directory '${imageDirPath}' is a file. please check your 'pasteImage.path' config.`);
+            return;
+        }
+
         // is the file existed?
         let existed = fs.existsSync(imagePath);
         if(existed){

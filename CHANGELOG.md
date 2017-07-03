@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.2 (July 3, 2017)
+
+- Improvement: Check if the dest directory is a file.
+
 ## 0.9.1 (July 3, 2017)
 
 - Feature: `pasteImage.path` and `pasteImage.basePath` support `${currentFileName}` and `${currentFileNameWithoutExt}` variable.
