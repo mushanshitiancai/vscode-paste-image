@@ -52,9 +52,13 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
     The string prepend to the resolved image path before paste.
 
+    Default is `""`.
+
 - `pasteImage.suffix`
 
     The string append to the resolved image path before paste.
+
+    Default is `""`.
 
 ## Config Example
 
@@ -78,7 +82,7 @@ I want to save all image in `blog/source/img`, and insert image url to article. 
 
 ### File name format
 
-If you selected some text in editor, then extension will use it as the image file name. The selected text can be a sub path like `subFolder/nameYouWant`.
+If you selected some text in editor, then extension will use it as the image file name. **The selected text can be a sub path like `subFolder/nameYouWant`.**
 
 If not the image will be saved in this format: "Y-MM-DD-HH-mm-ss.png". 
 
