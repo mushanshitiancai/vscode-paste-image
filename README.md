@@ -128,6 +128,10 @@ PayPal:
 
 <a href="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
 
-AliPay:
+支付宝:
 
 ![alipay](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/alipay.png)
+
+微信支付:
+
+![weixin](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/weixinpay.png)
