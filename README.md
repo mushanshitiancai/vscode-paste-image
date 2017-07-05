@@ -119,3 +119,9 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 ## License
 
 The extension and source are licensed under the [MIT license](LICENSE.txt).
+
+## Donate
+
+If you like this plugin, you can donate to me to support me develop it better, thank you!
+
+![alipay](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/alipay.png)
