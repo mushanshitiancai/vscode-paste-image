@@ -126,9 +126,7 @@ If you like this plugin, you can donate to me to support me develop it better, t
 
 PayPal:
 
-<form action="https://www.paypal.me/mushanshitiancai" method="get">
-<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0"  style="border:0px;background:none;" name="submit" alt="PayPal - The safer, easier way to pay online">
-</form>
+<a src="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
 
 AliPay:
 
