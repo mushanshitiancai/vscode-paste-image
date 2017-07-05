@@ -126,7 +126,7 @@ If you like this plugin, you can donate to me to support me develop it better, t
 
 PayPal:
 
-<a src="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
+<a href="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
 
 AliPay:
 
