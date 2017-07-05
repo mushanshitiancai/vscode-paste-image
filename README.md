@@ -124,4 +124,12 @@ The extension and source are licensed under the [MIT license](LICENSE.txt).
 
 If you like this plugin, you can donate to me to support me develop it better, thank you!
 
+PayPal:
+
+<form action="https://www.paypal.me/mushanshitiancai" method="get">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0"  style="border:0px;background:none;" name="submit" alt="PayPal - The safer, easier way to pay online">
+</form>
+
+AliPay:
+
 ![alipay](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/alipay.png)
