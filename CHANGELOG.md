@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.9.3 (July 5, 2017)
+
+- Feature: Support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`
+- Fix: Error when dest directory is not existed. (from @WindnBike)
+
 ## 0.9.2 (July 3, 2017)
 
 - Improvement: Check if the dest directory is a file.

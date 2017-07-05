@@ -82,7 +82,7 @@ I want to save all image in `blog/source/img`, and insert image url to article. 
 
 ### File name format
 
-If you selected some text in editor, then extension will use it as the image file name. **The selected text can be a sub path like `subFolder/nameYouWant`.**
+If you selected some text in editor, then extension will use it as the image file name. **The selected text can be a sub path like `subFolder/subFolder2/nameYouWant`.**
 
 If not the image will be saved in this format: "Y-MM-DD-HH-mm-ss.png". 
 
@@ -113,6 +113,7 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support config suffix
 - [x] supoort use variable ${currentFileName} and ${currentFileNameWithoutExt} in config
 - [x] support check if the dest directory is a file
+- [x] support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`
 - [ ] support config default image name pattern
 
 ## License

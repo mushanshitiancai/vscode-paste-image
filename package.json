@@ -2,7 +2,7 @@
   "name": "vscode-paste-image",
   "displayName": "Paste Image",
   "description": "paste image from clipboard directly",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "publisher": "mushan",
   "author": {
     "name": "mushan",
@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "copy-paste": "^1.2.0",
+    "fs-extra": "^3.0.1",
     "moment": "^2.14.1",
     "upath": "^1.0.0"
   },
