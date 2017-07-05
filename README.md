@@ -134,4 +134,4 @@ PayPal:
 
 微信支付:
 
-![weixin](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/weixinpay.png)
+![weixin](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/weixin.png)
