@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.9.3 (July 7, 2017)
+
+- Feature: Print log to "PasteImage" channel, and show in output panel.
+- Fix: Paste fail when powershell not in PATH on windows. (from @ELBe7ery)
+
 ## 0.9.3 (July 5, 2017)
 
 - Feature: Support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`

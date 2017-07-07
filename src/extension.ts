@@ -7,11 +7,39 @@ import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
 
+class Logger {
+    static channel: vscode.OutputChannel;
+
+    static log(message: any) {
+        if (this.channel) {
+            let time = moment().format("MM-DD HH:mm:ss");
+            this.channel.appendLine(`[${time}] ${message}`);
+        }
+    }
+
+    static showInformationMessage(message: string, ...items: string[]): Thenable<string> {
+        this.log(message);
+        return vscode.window.showInformationMessage(message, ...items);
+    }
+
+    static showErrorMessage(message: string, ...items: string[]): Thenable<string> {
+        this.log(message);
+        return vscode.window.showErrorMessage(message, ...items);
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Congratulations, your extension "vscode-paste-image" is now active!');
+    Logger.channel = vscode.window.createOutputChannel("PasteImage")
+    context.subscriptions.push(Logger.channel);
+
+    Logger.log('Congratulations, your extension "vscode-paste-image" is now active!');
 
     let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
-        Paster.paste();
+        try {
+            Paster.paste();
+        } catch (e) {
+            Logger.showErrorMessage(e)
+        }
     });
 
     context.subscriptions.push(disposable);
@@ -40,7 +68,7 @@ class Paster {
         let fileUri = editor.document.uri;
         if (!fileUri) return;
         if (fileUri.scheme === 'untitled') {
-            vscode.window.showInformationMessage('Before paste image, you need to save current edit file first.');
+            Logger.showInformationMessage('Before paste image, you need to save current edit file first.');
             return;
         }
         let filePath = fileUri.fsPath;
@@ -51,7 +79,7 @@ class Paster {
         var selection = editor.selection;
         var selectText = editor.document.getText(selection);
         if (selectText && !/^[\w\-.\/]+$/.test(selectText)) {
-            vscode.window.showInformationMessage('Your selection is not a valid file name!');
+            Logger.showInformationMessage('Your selection is not a valid file name!');
             return;
         }
 
@@ -61,7 +89,7 @@ class Paster {
             this.folderPathFromConfig = "${currentFileDir}";
         }
         if (this.folderPathFromConfig.length !== this.folderPathFromConfig.trim().length) {
-            vscode.window.showErrorMessage(`The config pasteImage.path = '${this.folderPathFromConfig}' is invalid. please check your config.`);
+            Logger.showErrorMessage(`The config pasteImage.path = '${this.folderPathFromConfig}' is invalid. please check your config.`);
             return;
         }
         this.basePathFromConfig = vscode.workspace.getConfiguration('pasteImage')['basePath'];
@@ -69,7 +97,7 @@ class Paster {
             this.basePathFromConfig = "";
         }
         if (this.basePathFromConfig.length !== this.basePathFromConfig.trim().length) {
-            vscode.window.showErrorMessage(`The config pasteImage.path = '${this.basePathFromConfig}' is invalid. please check your config.`);
+            Logger.showErrorMessage(`The config pasteImage.path = '${this.basePathFromConfig}' is invalid. please check your config.`);
             return;
         }
         this.prefixFromConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
@@ -86,7 +114,7 @@ class Paster {
             // is the file existed?
             let existed = fs.existsSync(imagePath);
             if (existed) {
-                vscode.window.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
+                Logger.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
                     if (choose != 'Replace') return;
 
                     this.saveAndPaste(editor, imagePath);
@@ -95,7 +123,7 @@ class Paster {
                 this.saveAndPaste(editor, imagePath);
             }
         } catch (err) {
-            vscode.window.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
+            Logger.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
             return;
         }
     }
@@ -106,7 +134,7 @@ class Paster {
             this.saveClipboardImageToFileAndGetPath(imagePath, (imagePath, imagePathReturnByScript) => {
                 if (!imagePathReturnByScript) return;
                 if (imagePathReturnByScript === 'no image') {
-                    vscode.window.showInformationMessage('There is not a image in clipboard.');
+                    Logger.showInformationMessage('There is not a image in clipboard.');
                     return;
                 }
 
@@ -123,10 +151,10 @@ class Paster {
                 });
             });
         }).catch(err => {
-            if(err instanceof PluginError){
-                vscode.window.showErrorMessage(err.message);
-            }else{
-                vscode.window.showErrorMessage(`Failed make folder. message=${err.message}`);
+            if (err instanceof PluginError) {
+                Logger.showErrorMessage(err.message);
+            } else {
+                Logger.showErrorMessage(`Failed make folder. message=${err.message}`);
             }
             return;
         });
@@ -164,9 +192,9 @@ class Paster {
 
             fs.stat(imageDir, (err, stats) => {
                 if (err == null) {
-                    if(stats.isDirectory()){
+                    if (stats.isDirectory()) {
                         resolve(imagePath);
-                    }else{
+                    } else {
                         reject(new PluginError(`The image dest directory '${imageDir}' is a file. please check your 'pasteImage.path' config.`))
                     }
                 } else if (err.code == "ENOENT") {
@@ -194,7 +222,14 @@ class Paster {
         if (platform === 'win32') {
             // Windows
             const scriptPath = path.join(__dirname, '../../res/pc.ps1');
-            const powershell = spawn('powershell', [
+
+            let command = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
+            let powershellExisted = fs.existsSync(command)
+            if (!powershellExisted) {
+                command = "powershell"
+            }
+
+            const powershell = spawn(command, [
                 '-noprofile',
                 '-noninteractive',
                 '-nologo',
@@ -204,6 +239,13 @@ class Paster {
                 '-file', scriptPath,
                 imagePath
             ]);
+            powershell.on('error', function (e) {
+                if (e.code == "ENOENT") {
+                    Logger.showErrorMessage(`The powershell command is not in you PATH environment variables.Please add it and retry.`);
+                } else {
+                    Logger.showErrorMessage(e);
+                }
+            });
             powershell.on('exit', function (code, signal) {
                 // console.log('exit', code, signal);
             });
@@ -216,10 +258,12 @@ class Paster {
             let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
             let ascript = spawn('osascript', [scriptPath, imagePath]);
+            ascript.on('error', function (e) {
+                Logger.showErrorMessage(e);
+            });
             ascript.on('exit', function (code, signal) {
                 // console.log('exit',code,signal);
             });
-
             ascript.stdout.on('data', function (data: Buffer) {
                 cb(imagePath, data.toString().trim());
             });
@@ -229,14 +273,16 @@ class Paster {
             let scriptPath = path.join(__dirname, '../../res/linux.sh');
 
             let ascript = spawn('sh', [scriptPath, imagePath]);
+            ascript.on('error', function (e) {
+                Logger.showErrorMessage(e);
+            });
             ascript.on('exit', function (code, signal) {
                 // console.log('exit',code,signal);
             });
-
             ascript.stdout.on('data', function (data: Buffer) {
                 let result = data.toString().trim();
                 if (result == "no xclip") {
-                    vscode.window.showInformationMessage('You need to install xclip command first.');
+                    Logger.showInformationMessage('You need to install xclip command first.');
                     return;
                 }
                 cb(imagePath, result);
@@ -283,7 +329,7 @@ class Paster {
     }
 }
 
-class PluginError{
-    constructor(public message?:string){
+class PluginError {
+    constructor(public message?: string) {
     }
 }
