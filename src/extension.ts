@@ -194,7 +194,8 @@ class Paster {
         if (platform === 'win32') {
             // Windows
             const scriptPath = path.join(__dirname, '../../res/pc.ps1');
-            const powershell = spawn('powershell', [
+            //The full path is added in case user does not have powershell added into env. variables
+            const powershell = spawn('C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell', [
                 '-noprofile',
                 '-noninteractive',
                 '-nologo',
