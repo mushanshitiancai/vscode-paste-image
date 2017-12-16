@@ -78,7 +78,7 @@ class Paster {
         // get selection as image file name, need check
         var selection = editor.selection;
         var selectText = editor.document.getText(selection);
-        if (selectText && !/^[\w\-.\/]+$/.test(selectText)) {
+        if (selectText && /[\\:*?<>|]/.test(selectText)) {
             Logger.showInformationMessage('Your selection is not a valid file name!');
             return;
         }

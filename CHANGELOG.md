@@ -1,6 +1,10 @@
 # Change Log
 
-## 0.9.3 (July 7, 2017)
+## 0.9.5 (December 16, 2017)
+
+- Fix: Support select non-ascii text as file name
+
+## 0.9.4 (July 7, 2017)
 
 - Feature: Print log to "PasteImage" channel, and show in output panel.
 - Fix: Paste fail when powershell not in PATH on windows. (from @ELBe7ery)
