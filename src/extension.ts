@@ -304,6 +304,7 @@ class Paster {
         }
 
         imageFilePath = `${prefix}${imageFilePath}${suffix}`;
+        imageFilePath = encodeURI(imageFilePath);
 
         switch (languageId) {
             case "markdown":
