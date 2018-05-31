@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0 (May 31, 2018)
+
+- Feature: Add `pasteImage.insertPattren` configuration. Support config the format of text would be pasted.
+- Feature: Add `pasteImage.defaultName` configuration. Support config default image file name.
+- Feature: Add `pasteImage.encodePath` configuration. Support url encode image file path.
+- Feature: Add `pasteImage.namePrefix` configuration.
+- Feature: Add `pasteImage.nameSuffix` configuration.
+
 ## 0.9.5 (December 16, 2017)
 
 - Fix: Support select non-ascii text as file name

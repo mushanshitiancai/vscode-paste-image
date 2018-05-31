@@ -49,16 +49,28 @@ export function deactivate() {
 }
 
 class Paster {
-    static PATH_VARIABLE_CURRNET_FILE_DIR = /\$\{currentFileDir\}/;
-    static PATH_VARIABLE_PROJECT_ROOT = /\$\{projectRoot\}/;
-    static PATH_VARIABLE_CURRNET_FILE_NAME = /\$\{currentFileName\}/;
-    static PATH_VARIABLE_CURRNET_FILE_NAME_WITHOUT_EXT = /\$\{currentFileNameWithoutExt\}/;
+    static PATH_VARIABLE_CURRNET_FILE_DIR = /\$\{currentFileDir\}/g;
+    static PATH_VARIABLE_PROJECT_ROOT = /\$\{projectRoot\}/g;
+    static PATH_VARIABLE_CURRNET_FILE_NAME = /\$\{currentFileName\}/g;
+    static PATH_VARIABLE_CURRNET_FILE_NAME_WITHOUT_EXT = /\$\{currentFileNameWithoutExt\}/g;
 
-    static folderPathFromConfig: string;
-    static basePathFromConfig: string;
-    static prefixFromConfig: string;
-    static suffixFromConfig: string;
-    static forceUnixStyleSeparatorFromConfig: boolean;
+    static PATH_VARIABLE_IMAGE_FILE_PATH = /\$\{imageFilePath\}/g;
+    static PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH = /\$\{imageOriginalFilePath\}/g;
+    static PATH_VARIABLE_IMAGE_FILE_NAME = /\$\{imageFileName\}/g;
+    static PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g;
+    static PATH_VARIABLE_IMAGE_SYNTAX_PREFIX = /\$\{imageSyntaxPrefix\}/g;
+    static PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX = /\$\{imageSyntaxSuffix\}/g;
+
+    static defaultNameConfig: string;
+    static folderPathConfig: string;
+    static basePathConfig: string;
+    static prefixConfig: string;
+    static suffixConfig: string;
+    static forceUnixStyleSeparatorConfig: boolean;
+    static encodePathConfig: string;
+    static namePrefixConfig: string;
+    static nameSuffixConfig: string;
+    static insertPatternConfig: string;
 
     public static paste() {
         // get current edit file path
@@ -83,32 +95,49 @@ class Paster {
             return;
         }
 
-        // load config pasteImage.path/pasteImage.basePath
-        this.folderPathFromConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
-        if (!this.folderPathFromConfig) {
-            this.folderPathFromConfig = "${currentFileDir}";
+        // load config pasteImage.defaultName
+        this.defaultNameConfig = vscode.workspace.getConfiguration('pasteImage')['defaultName'];
+        if (!this.defaultNameConfig) {
+            this.defaultNameConfig = "Y-MM-DD-HH-mm-ss"
         }
-        if (this.folderPathFromConfig.length !== this.folderPathFromConfig.trim().length) {
-            Logger.showErrorMessage(`The config pasteImage.path = '${this.folderPathFromConfig}' is invalid. please check your config.`);
+
+        // load config pasteImage.path
+        this.folderPathConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
+        if (!this.folderPathConfig) {
+            this.folderPathConfig = "${currentFileDir}";
+        }
+        if (this.folderPathConfig.length !== this.folderPathConfig.trim().length) {
+            Logger.showErrorMessage(`The config pasteImage.path = '${this.folderPathConfig}' is invalid. please check your config.`);
             return;
         }
-        this.basePathFromConfig = vscode.workspace.getConfiguration('pasteImage')['basePath'];
-        if (!this.basePathFromConfig) {
-            this.basePathFromConfig = "";
+        // load config pasteImage.basePath
+        this.basePathConfig = vscode.workspace.getConfiguration('pasteImage')['basePath'];
+        if (!this.basePathConfig) {
+            this.basePathConfig = "";
         }
-        if (this.basePathFromConfig.length !== this.basePathFromConfig.trim().length) {
-            Logger.showErrorMessage(`The config pasteImage.path = '${this.basePathFromConfig}' is invalid. please check your config.`);
+        if (this.basePathConfig.length !== this.basePathConfig.trim().length) {
+            Logger.showErrorMessage(`The config pasteImage.path = '${this.basePathConfig}' is invalid. please check your config.`);
             return;
         }
-        this.prefixFromConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
-        this.suffixFromConfig = vscode.workspace.getConfiguration('pasteImage')['suffix'];
-        this.forceUnixStyleSeparatorFromConfig = vscode.workspace.getConfiguration('pasteImage')['forceUnixStyleSeparator'];
-        this.forceUnixStyleSeparatorFromConfig = !!this.forceUnixStyleSeparatorFromConfig;
+        // load other config
+        this.prefixConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
+        this.suffixConfig = vscode.workspace.getConfiguration('pasteImage')['suffix'];
+        this.forceUnixStyleSeparatorConfig = vscode.workspace.getConfiguration('pasteImage')['forceUnixStyleSeparator'];
+        this.forceUnixStyleSeparatorConfig = !!this.forceUnixStyleSeparatorConfig;
+        this.encodePathConfig = vscode.workspace.getConfiguration('pasteImage')['encodePath'];
+        this.namePrefixConfig = vscode.workspace.getConfiguration('pasteImage')['namePrefix'];
+        this.nameSuffixConfig = vscode.workspace.getConfiguration('pasteImage')['nameSuffix'];
+        this.insertPatternConfig = vscode.workspace.getConfiguration('pasteImage')['insertPattern'];
 
-        this.folderPathFromConfig = this.replacePathVariable(this.folderPathFromConfig, projectPath, filePath);
-        this.basePathFromConfig = this.replacePathVariable(this.basePathFromConfig, projectPath, filePath);
+        // replace variable in config
+        this.defaultNameConfig = this.replacePathVariable(this.defaultNameConfig, projectPath, filePath, (x) => `[${x}]`);
+        this.folderPathConfig = this.replacePathVariable(this.folderPathConfig, projectPath, filePath);
+        this.basePathConfig = this.replacePathVariable(this.basePathConfig, projectPath, filePath);
+        this.namePrefixConfig = this.replacePathVariable(this.namePrefixConfig, projectPath, filePath);
+        this.nameSuffixConfig = this.replacePathVariable(this.nameSuffixConfig, projectPath, filePath);
+        this.insertPatternConfig = this.replacePathVariable(this.insertPatternConfig, projectPath, filePath);
 
-        let imagePath = this.getImagePath(filePath, selectText, this.folderPathFromConfig);
+        let imagePath = this.getImagePath(filePath, selectText, this.folderPathConfig);
 
         try {
             // is the file existed?
@@ -138,7 +167,7 @@ class Paster {
                     return;
                 }
 
-                imagePath = this.renderFilePath(editor.document.languageId, this.basePathFromConfig, imagePath, this.forceUnixStyleSeparatorFromConfig, this.prefixFromConfig, this.suffixFromConfig);
+                imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
                 editor.edit(edit => {
                     let current = editor.selection;
@@ -164,9 +193,9 @@ class Paster {
         // image file name
         let imageFileName = "";
         if (!selectText) {
-            imageFileName = moment().format("Y-MM-DD-HH-mm-ss") + ".png";
+            imageFileName = moment().format(this.defaultNameConfig) + ".png";
         } else {
-            imageFileName = selectText + ".png";
+            imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig + ".png";
         }
 
         // image output path
@@ -303,28 +332,54 @@ class Paster {
             imageFilePath = upath.normalize(imageFilePath);
         }
 
+        let originalImagePath = imageFilePath;
+        let ext = path.extname(originalImagePath);
+        let fileName = path.basename(originalImagePath);
+        let fileNameWithoutExt = path.basename(originalImagePath, ext);
+
         imageFilePath = `${prefix}${imageFilePath}${suffix}`;
 
+        if (this.encodePathConfig == "urlEncode") {
+            imageFilePath = encodeURI(imageFilePath)
+        } else if (this.encodePathConfig == "urlEncodeSpace") {
+            imageFilePath = imageFilePath.replace(/ /g, "%20");
+        }
+
+        let imageSyntaxPrefix = "";
+        let imageSyntaxSuffix = ""
         switch (languageId) {
             case "markdown":
-                return `![](${imageFilePath})`
+                imageSyntaxPrefix = `![](`
+                imageSyntaxSuffix = `)`
+                break;
             case "asciidoc":
-                return `image::${imageFilePath}[]`
-            default:
-                return imageFilePath;
+                imageSyntaxPrefix = `image::`
+                imageSyntaxSuffix = `[]`
+                break;
         }
+
+        let result = this.insertPatternConfig
+        result = result.replace(this.PATH_VARIABLE_IMAGE_SYNTAX_PREFIX, imageSyntaxPrefix);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX, imageSyntaxSuffix);
+
+        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_PATH, imageFilePath);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
+
+        return result;
     }
 
-    public static replacePathVariable(pathStr: string, projectRoot: string, curFilePath: string): string {
+    public static replacePathVariable(pathStr: string, projectRoot: string, curFilePath: string, postFunction: (string) => string = (x) => x): string {
         let currentFileDir = path.dirname(curFilePath);
         let ext = path.extname(curFilePath);
         let fileName = path.basename(curFilePath);
         let fileNameWithoutExt = path.basename(curFilePath, ext);
 
-        pathStr = pathStr.replace(this.PATH_VARIABLE_PROJECT_ROOT, projectRoot);
-        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_DIR, currentFileDir);
-        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_NAME, fileName);
-        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
+        pathStr = pathStr.replace(this.PATH_VARIABLE_PROJECT_ROOT, postFunction(projectRoot));
+        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_DIR, postFunction(currentFileDir));
+        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_NAME, postFunction(fileName));
+        pathStr = pathStr.replace(this.PATH_VARIABLE_CURRNET_FILE_NAME_WITHOUT_EXT, postFunction(fileNameWithoutExt));
         return pathStr;
     }
 }

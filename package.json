@@ -2,7 +2,7 @@
   "name": "vscode-paste-image",
   "displayName": "Paste Image",
   "description": "paste image from clipboard directly",
-  "version": "0.9.5",
+  "version": "1.0.0",
   "publisher": "mushan",
   "author": {
     "name": "mushan",
@@ -67,6 +67,36 @@
           "type": "string",
           "default": "",
           "description": "The string append to the resolved image path before paste."
+        },
+        "pasteImage.defaultName": {
+          "type": "string",
+          "default": "Y-MM-DD-HH-mm-ss",
+          "description": "The default image file name. The value of this config will be pass to the 'format' function of moment library(a js time manipulation library), you can read document https://momentjs.com/docs/#/displaying/format/ for advanced usage."
+        },
+        "pasteImage.namePrefix": {
+          "type": "string",
+          "default": "",
+          "description": "The string prepend to the image file name."
+        },
+        "pasteImage.nameSuffix": {
+          "type": "string",
+          "default": "",
+          "description": "The string append to the image file name."
+        },
+        "pasteImage.encodePath": {
+          "type": "string",
+          "enum": [
+            "none",
+            "urlEncode",
+            "urlEncodeSpace"
+          ],
+          "default": "urlEncodeSpace",
+          "description": "The string append to the image file name.How to encode image path before insert to editor. Support options: none, urlEncode, urlEncodeSpace"
+        },
+        "pasteImage.insertPattern": {
+          "type": "string",
+          "default": "${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}",
+          "description": "The pattern of string that would be pasted to text."
         }
       }
     },
