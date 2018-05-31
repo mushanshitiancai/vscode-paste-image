@@ -338,6 +338,7 @@ class Paster {
         let fileNameWithoutExt = path.basename(originalImagePath, ext);
 
         imageFilePath = `${prefix}${imageFilePath}${suffix}`;
+        imageFilePath = encodeURI(imageFilePath);
 
         if (this.encodePathConfig == "urlEncode") {
             imageFilePath = encodeURI(imageFilePath)
