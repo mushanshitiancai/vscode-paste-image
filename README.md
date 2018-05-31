@@ -123,8 +123,8 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
     - `${projectRoot}`: the path of the project opened in vscode.
     - `${currentFileName}`: the current file name with ext.
     - `${currentFileNameWithoutExt}`: the current file name without ext.
-    - `${imageSyntaxPrefix}`: in markdown file it would be <pre>![](</pre>, in asciidoc file it would be <pre>image::</pre>, in other file it would be empty string
-    - `${imageSyntaxSuffix}`: in markdown file it would be <pre>)</pre>, in asciidoc file it would be <pre>[]</pre>, in other file it would be empty string
+    - `${imageSyntaxPrefix}`: in markdown file it would be <code>![](</code>, in asciidoc file it would be <code>image::</code>, in other file it would be empty string
+    - `${imageSyntaxSuffix}`: in markdown file it would be <code>)</code>, in asciidoc file it would be <code>[]</code>, in other file it would be empty string
 
     Defalut is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
 
