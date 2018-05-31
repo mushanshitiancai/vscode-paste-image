@@ -83,6 +83,32 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
     Defalut is `urlEncodeSpace`.
 
+- `pasteImage.namePrefix`
+
+    The string prepend to the image file name.
+
+    You can use variable:
+    
+    - `${currentFileDir}`: the path of directory that contain current editing file. 
+    - `${projectRoot}`: the path of the project opened in vscode.
+    - `${currentFileName}`: the current file name with ext.
+    - `${currentFileNameWithoutExt}`: the current file name without ext.
+
+    Default is `""`.
+
+- `pasteImage.nameSuffix`
+
+    The string append to the image name.
+
+    You can use variable:
+    
+    - `${currentFileDir}`: the path of directory that contain current editing file. 
+    - `${projectRoot}`: the path of the project opened in vscode.
+    - `${currentFileName}`: the current file name with ext.
+    - `${currentFileNameWithoutExt}`: the current file name without ext.
+
+    Default is `""`.
+
 - `pasteImage.insertPattren`
 
     The pattern of string that would be pasted to text. 
@@ -97,8 +123,8 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
     - `${projectRoot}`: the path of the project opened in vscode.
     - `${currentFileName}`: the current file name with ext.
     - `${currentFileNameWithoutExt}`: the current file name without ext.
-    - `${imageSyntaxPrefix}`: in markdown file it would be `![](`, in asciidoc file it would be `image::`, in other file it would be empty string
-    - `${imageSyntaxSuffix}`: in markdown file it would be `)`, in asciidoc file it would be `[]`, in other file it would be empty string
+    - `${imageSyntaxPrefix}`: in markdown file it would be <pre>![](<pre>, in asciidoc file it would be <pre>image::<pre>, in other file it would be empty string
+    - `${imageSyntaxSuffix}`: in markdown file it would be <pre>)<pre>, in asciidoc file it would be <pre>[]<pre>, in other file it would be empty string
 
     Defalut is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
 
@@ -124,6 +150,26 @@ If you want to save image in separate directory:
 
 ```
 "pasteImage.path": "${projectRoot}/source/img/${currentFileNameWithoutExt}",
+"pasteImage.basePath": "${projectRoot}/source",
+"pasteImage.forceUnixStyleSeparator": true,
+"pasteImage.prefix": "/"
+```
+
+If you want to save image with article name as prefix:
+
+```
+"pasteImage.namePrefix": "${currentFileNameWithoutExt}_",
+"pasteImage.path": "${projectRoot}/source/img",
+"pasteImage.basePath": "${projectRoot}/source",
+"pasteImage.forceUnixStyleSeparator": true,
+"pasteImage.prefix": "/"
+```
+
+If you want to use html in markdown:
+
+```
+"pasteImage.insertPattern": "<img>${imageFileName}</img>"
+"pasteImage.path": "${projectRoot}/source/img",
 "pasteImage.basePath": "${projectRoot}/source",
 "pasteImage.forceUnixStyleSeparator": true,
 "pasteImage.prefix": "/"

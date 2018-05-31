@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1 (May 31, 2018)
+
+- Update readme
+
 ## 1.0.0 (May 31, 2018)
 
 - Feature: Add `pasteImage.insertPattren` configuration. Support config the format of text would be pasted.
