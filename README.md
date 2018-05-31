@@ -191,6 +191,8 @@ When you editing a asciidoc, it will pasted as asciidoc image link format `image
 
 In other file, it just paste the image's path.
 
+Now you can use configuration `pasteImage.insertPattern` to config the fomat of file link.
+
 ## Contact
 
 If you have some any question or advice, Welcome to [issue](https://github.com/mushanshitiancai/vscode-paste-image/issues)
