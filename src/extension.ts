@@ -193,7 +193,7 @@ class Paster {
         // image file name
         let imageFileName = "";
         if (!selectText) {
-            imageFileName = moment().format(this.defaultNameConfig) + ".png";
+            imageFileName = this.namePrefixConfig + moment().format(this.defaultNameConfig) + this.nameSuffixConfig + ".png";
         } else {
             imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig + ".png";
         }

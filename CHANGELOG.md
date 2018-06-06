@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.2 (June 6, 2018)
+
+- Fix: `pasteImage.namePrefix` and `pasteImage.nameSuffix` not work when there is no text selected.
+
 ## 1.0.1 (May 31, 2018)
 
 - Update readme
