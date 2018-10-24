@@ -97,6 +97,11 @@
           "type": "string",
           "default": "${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}",
           "description": "The pattern of string that would be pasted to text."
+        },
+        "pasteImage.askForFileName": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set to true if you want to be able to change the filename prior to saving the file to disk."
         }
       }
     },
