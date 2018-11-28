@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.3 (November 28, 2018)
+
+- Fix: paste translucent image get background issue (windows)
+
 ## 1.0.2 (June 6, 2018)
 
 - Fix: `pasteImage.namePrefix` and `pasteImage.nameSuffix` not work when there is no text selected.
