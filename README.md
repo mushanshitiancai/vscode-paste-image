@@ -228,6 +228,7 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`
 - [x] support config default image name pattern
 - [x] support config the text format
+- [x] support file path confirm box (by @DonMartin76)
 
 ## License
 
