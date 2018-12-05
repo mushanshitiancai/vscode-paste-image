@@ -128,10 +128,14 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
     Defalut is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
 
-- `pasteImage.askForFileName`
+- `pasteImage.showFilePathConfirmInputBox`
 
-    Enabling this `boolean` setting will make Paste Image ask you to confirm the file name. This is useful if you want to change the filename of the image you are currently pasting, e.g. to use telling names instead of just a time stamp.
-    
+    Enabling this `boolean` setting will make Paste Image ask you to confirm the file path(or file name). This is useful if you want to change the file path of the image you are currently pasting. Default is `false`.
+
+- `pasteImage.filePathConfirmInputBoxMode`
+
+    - `fullPath`: show full path in inputBox, so you can change the path or name. Defautl value.
+    - `onlyName`: show only file name in inputBox, so it's easy to change name.
 
 ## Config Example
 

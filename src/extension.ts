@@ -61,6 +61,9 @@ class Paster {
     static PATH_VARIABLE_IMAGE_SYNTAX_PREFIX = /\$\{imageSyntaxPrefix\}/g;
     static PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX = /\$\{imageSyntaxSuffix\}/g;
 
+    static FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME = "onlyName";
+    static FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH = "fullPath";
+
     static defaultNameConfig: string;
     static folderPathConfig: string;
     static basePathConfig: string;
@@ -71,7 +74,8 @@ class Paster {
     static namePrefixConfig: string;
     static nameSuffixConfig: string;
     static insertPatternConfig: string;
-    static askForFileName: boolean;
+    static showFilePathConfirmInputBox: boolean;
+    static filePathConfirmInputBoxMode: string;
 
     public static paste() {
         // get current edit file path
@@ -129,7 +133,8 @@ class Paster {
         this.namePrefixConfig = vscode.workspace.getConfiguration('pasteImage')['namePrefix'];
         this.nameSuffixConfig = vscode.workspace.getConfiguration('pasteImage')['nameSuffix'];
         this.insertPatternConfig = vscode.workspace.getConfiguration('pasteImage')['insertPattern'];
-        this.askForFileName = vscode.workspace.getConfiguration('pasteImage')['askForFileName'] || false;
+        this.showFilePathConfirmInputBox = vscode.workspace.getConfiguration('pasteImage')['showFilePathConfirmInputBox'] || false;
+        this.filePathConfirmInputBoxMode = vscode.workspace.getConfiguration('pasteImage')['filePathConfirmInputBoxMode'];
 
         // replace variable in config
         this.defaultNameConfig = this.replacePathVariable(this.defaultNameConfig, projectPath, filePath, (x) => `[${x}]`);
@@ -141,7 +146,7 @@ class Paster {
 
         // "this" is lost when coming back from the callback, thus we need to store it here.
         const instance = this;
-        this.getImagePath(filePath, selectText, this.folderPathConfig, this.askForFileName, function (err, imagePath) {
+        this.getImagePath(filePath, selectText, this.folderPathConfig, this.showFilePathConfirmInputBox, this.filePathConfirmInputBoxMode, function (err, imagePath) {
             try {
                 // is the file existed?
                 let existed = fs.existsSync(imagePath);
@@ -193,7 +198,9 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string, askForFileName: boolean, callback: (err, imagePath: string) => void) {
+    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string, 
+        showFilePathConfirmInputBox: boolean, filePathConfirmInputBoxMode: string,
+        callback: (err, imagePath: string) => void) {
         // image file name
         let imageFileName = "";
         if (!selectText) {
@@ -202,15 +209,26 @@ class Paster {
             imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig + ".png";
         }
 
-        if (askForFileName) {
+        let filePathOrName;
+        if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH){
+            filePathOrName = makeImagePath(imageFileName);
+        } else {
+            filePathOrName = imageFileName;
+        }
+
+        if (showFilePathConfirmInputBox) {
             vscode.window.showInputBox({
                 prompt: 'Please specify the filename of the image.',
-                value: imageFileName
-            }).then((fileName) => {
-                if (fileName) {
-                    if (!fileName.endsWith('.png'))
-                        fileName += '.png';
-                    callback(null, makeImagePath(fileName));
+                value: filePathOrName
+            }).then((result) => {
+                if (result) {
+                    if (!result.endsWith('.png')) result += '.png';
+                    
+                    if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME){
+                        result = makeImagePath(result);
+                    }
+
+                    callback(null, result);
                 }
                 return;
             });

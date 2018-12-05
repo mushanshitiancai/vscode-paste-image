@@ -3,6 +3,7 @@
 ## 1.0.3 (November 28, 2018)
 
 - Fix: paste translucent image get background issue (windows)
+- Feature: Support show file path confirm inputbox before saving.
 
 ## 1.0.2 (June 6, 2018)
 
