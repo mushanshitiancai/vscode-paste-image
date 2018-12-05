@@ -109,7 +109,7 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
     Default is `""`.
 
-- `pasteImage.insertPattren`
+- `pasteImage.insertPattern`
 
     The pattern of string that would be pasted to text. 
 
@@ -127,6 +127,11 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
     - `${imageSyntaxSuffix}`: in markdown file it would be <code>)</code>, in asciidoc file it would be <code>[]</code>, in other file it would be empty string
 
     Defalut is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
+
+- `pasteImage.askForFileName`
+
+    Enabling this `boolean` setting will make Paste Image ask you to confirm the file name. This is useful if you want to change the filename of the image you are currently pasting, e.g. to use telling names instead of just a time stamp.
+    
 
 ## Config Example
 

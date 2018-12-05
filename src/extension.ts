@@ -71,6 +71,7 @@ class Paster {
     static namePrefixConfig: string;
     static nameSuffixConfig: string;
     static insertPatternConfig: string;
+    static askForFileName: boolean;
 
     public static paste() {
         // get current edit file path
@@ -128,6 +129,7 @@ class Paster {
         this.namePrefixConfig = vscode.workspace.getConfiguration('pasteImage')['namePrefix'];
         this.nameSuffixConfig = vscode.workspace.getConfiguration('pasteImage')['nameSuffix'];
         this.insertPatternConfig = vscode.workspace.getConfiguration('pasteImage')['insertPattern'];
+        this.askForFileName = vscode.workspace.getConfiguration('pasteImage')['askForFileName'] || false;
 
         // replace variable in config
         this.defaultNameConfig = this.replacePathVariable(this.defaultNameConfig, projectPath, filePath, (x) => `[${x}]`);
@@ -137,24 +139,26 @@ class Paster {
         this.nameSuffixConfig = this.replacePathVariable(this.nameSuffixConfig, projectPath, filePath);
         this.insertPatternConfig = this.replacePathVariable(this.insertPatternConfig, projectPath, filePath);
 
-        let imagePath = this.getImagePath(filePath, selectText, this.folderPathConfig);
-
-        try {
-            // is the file existed?
-            let existed = fs.existsSync(imagePath);
-            if (existed) {
-                Logger.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
-                    if (choose != 'Replace') return;
-
-                    this.saveAndPaste(editor, imagePath);
-                });
-            } else {
-                this.saveAndPaste(editor, imagePath);
+        // "this" is lost when coming back from the callback, thus we need to store it here.
+        const instance = this;
+        this.getImagePath(filePath, selectText, this.folderPathConfig, this.askForFileName, function (err, imagePath) {
+            try {
+                // is the file existed?
+                let existed = fs.existsSync(imagePath);
+                if (existed) {
+                    Logger.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
+                        if (choose != 'Replace') return;
+                        
+                        instance.saveAndPaste(editor, imagePath);
+                    });
+                } else {
+                    instance.saveAndPaste(editor, imagePath);
+                }
+            } catch (err) {
+                Logger.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
+                return;
             }
-        } catch (err) {
-            Logger.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
-            return;
-        }
+        });
     }
 
     public static saveAndPaste(editor: vscode.TextEditor, imagePath) {
@@ -189,7 +193,7 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string): string {
+    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string, askForFileName: boolean, callback: (err, imagePath: string) => void) {
         // image file name
         let imageFileName = "";
         if (!selectText) {
@@ -198,18 +202,37 @@ class Paster {
             imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig + ".png";
         }
 
-        // image output path
-        let folderPath = path.dirname(filePath);
-        let imagePath = "";
-
-        // generate image path
-        if (path.isAbsolute(folderPathFromConfig)) {
-            imagePath = path.join(folderPathFromConfig, imageFileName);
+        if (askForFileName) {
+            vscode.window.showInputBox({
+                prompt: 'Please specify the filename of the image.',
+                value: imageFileName
+            }).then((fileName) => {
+                if (fileName) {
+                    if (!fileName.endsWith('.png'))
+                        fileName += '.png';
+                    callback(null, makeImagePath(fileName));
+                }
+                return;
+            });
         } else {
-            imagePath = path.join(folderPath, folderPathFromConfig, imageFileName);
+            callback(null, makeImagePath(imageFileName));
+            return;
         }
 
-        return imagePath;
+        function makeImagePath(fileName) {
+            // image output path
+            let folderPath = path.dirname(filePath);
+            let imagePath = "";
+
+            // generate image path
+            if (path.isAbsolute(folderPathFromConfig)) {
+                imagePath = path.join(folderPathFromConfig, fileName);
+            } else {
+                imagePath = path.join(folderPath, folderPathFromConfig, fileName);
+            }
+
+            return imagePath;
+        }
     }
 
     /**
