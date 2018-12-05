@@ -6,6 +6,10 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
 ![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
 
+Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path before save:
+
+![confirm-inputbox](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/confirm-inputbox.png)
+
 ## Usage
 
 1. capture screen to clipboard

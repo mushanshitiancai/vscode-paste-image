@@ -3,7 +3,7 @@
 ## 1.0.3 (November 28, 2018)
 
 - Fix: paste translucent image get background issue (windows)
-- Feature: Support show file path confirm inputbox before saving.
+- Feature: Add `pasteImage.showFilePathConfirmInputBox` & `pasteImage.filePathConfirmInputBoxMode` configuration. Support show file path confirm inputbox before saving.
 
 ## 1.0.2 (June 6, 2018)
 
