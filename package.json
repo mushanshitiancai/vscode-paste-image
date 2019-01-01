@@ -3,18 +3,18 @@
   "displayName": "Paste Image",
   "description": "paste image from clipboard directly",
   "version": "1.0.3",
-  "publisher": "mushan",
+  "publisher": "meganii",
   "author": {
-    "name": "mushan",
-    "email": "mushanmail@126.com"
+    "name": "meganii",
+    "email": "yuhei24@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
+    "url": "https://github.com/meganii/vscode-paste-image.git"
   },
-  "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
+  "homepage": "https://github.com/meganii/vscode-paste-image/blob/master/README.md",
   "bugs": {
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
+    "url": "https://github.com/meganii/vscode-paste-image/issues"
   },
   "icon": "res/icon.png",
   "galleryBanner": {
@@ -135,12 +135,14 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "dependencies": {
+    "cloudinary": "^1.13.2",
     "copy-paste": "^1.2.0",
     "fs-extra": "^3.0.1",
     "moment": "^2.14.1",
     "upath": "^1.0.0"
   },
   "devDependencies": {
+    "tslint": "^5.11.0",
     "typescript": "^1.8.5",
     "vscode": "^0.11.0"
   }
