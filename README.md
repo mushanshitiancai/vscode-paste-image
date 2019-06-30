@@ -115,9 +115,12 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
 
 - `pasteImage.insertPattern`
 
-    The pattern of string that would be pasted to text. 
-
-    You can use variable:
+    The pattern of string that would be pasted to text.
+    
+    You can configure both the alt text and the file path.
+    For example: `![${imageFileNameWithoutExt}](${imageFilePath})`.
+    
+    You can use the following variables:
 
     - `${imageFilePath}`: the image file path, with `pasteImage.prefix`, `pasteImage.suffix`, and url encoded.
     - `${imageOriginalFilePath}`: the image file path.
@@ -204,7 +207,7 @@ When you editing a asciidoc, it will pasted as asciidoc image link format `image
 
 In other file, it just paste the image's path.
 
-Now you can use configuration `pasteImage.insertPattern` to config the fomat of file link.
+Now you can use configuration `pasteImage.insertPattern` to config the format of file link and the alt text.
 
 ## Contact
 
