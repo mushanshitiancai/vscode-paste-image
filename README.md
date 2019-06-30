@@ -61,7 +61,7 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
 
 - `pasteImage.forceUnixStyleSeparator`
 
-    Force set the file separator styel to unix style. If set false, separator styel will follow the system style. 
+    Force set the file separator style to unix style. If set false, separator style will follow the system style. 
     
     Default is `true`.
 
@@ -83,9 +83,9 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
 
     - `none`: do nothing, just insert image path to text
     - `urlEncode`: url encode whole image path
-    - `urlEncodeSpace`: url encode only space character(sapce to %20)
+    - `urlEncodeSpace`: url encode only space character(space to %20)
 
-    Defalut is `urlEncodeSpace`.
+    Default is `urlEncodeSpace`.
 
 - `pasteImage.namePrefix`
 
@@ -130,7 +130,7 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
     - `${imageSyntaxPrefix}`: in markdown file it would be <code>![](</code>, in asciidoc file it would be <code>image::</code>, in other file it would be empty string
     - `${imageSyntaxSuffix}`: in markdown file it would be <code>)</code>, in asciidoc file it would be <code>[]</code>, in other file it would be empty string
 
-    Defalut is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
+    Default is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
 
 - `pasteImage.showFilePathConfirmInputBox`
 
@@ -138,7 +138,7 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
 
 - `pasteImage.filePathConfirmInputBoxMode`
 
-    - `fullPath`: show full path in inputBox, so you can change the path or name. Defautl value.
+    - `fullPath`: show full path in inputBox, so you can change the path or name. Default value.
     - `onlyName`: show only file name in inputBox, so it's easy to change name.
 
 ## Config Example
@@ -150,7 +150,7 @@ blog/source/_posts  (articles)
 blog/source/img     (images)
 ```
 
-I want to save all image in `blog/source/img`, and insert image url to article. And hexo will generate `blog/source/` as the website root, so the image url shoud be like `/img/xxx.png`. So I can config pasteImage in `blog/.vscode/setting.json` like this:
+I want to save all image in `blog/source/img`, and insert image url to article. And hexo will generate `blog/source/` as the website root, so the image url should be like `/img/xxx.png`. So I can config pasteImage in `blog/.vscode/setting.json` like this:
 
 ```
 "pasteImage.path": "${projectRoot}/source/img",
@@ -218,12 +218,12 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 - [x] support config (@ysknkd in #4)
 - [x] support config relative/absolute path (@ysknkd in #4)
 - [x] support asciidoc
-- [x] supoort use variable ${projectRoot} and ${currentFileDir} in config
+- [x] support use variable ${projectRoot} and ${currentFileDir} in config
 - [x] support config basePath
 - [x] support config forceUnixStyleSeparator
 - [x] support config prefix
 - [x] support config suffix
-- [x] supoort use variable ${currentFileName} and ${currentFileNameWithoutExt} in config
+- [x] support use variable ${currentFileName} and ${currentFileNameWithoutExt} in config
 - [x] support check if the dest directory is a file
 - [x] support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`
 - [x] support config default image name pattern
