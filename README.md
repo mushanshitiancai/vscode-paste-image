@@ -118,7 +118,7 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
     The pattern of string that would be pasted to text.
     
     You can configure both the alt text and the file path.
-    For example: `![${imageFileNameWithoutExt}](${imageFilePath})`.
+    For example, `![${imageFileNameWithoutExt}](${imageFilePath})` would add the file name as the alt text instead of the default (blank).
     
     You can use the following variables:
 
