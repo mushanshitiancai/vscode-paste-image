@@ -32,6 +32,8 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
     - `${currentFileNameWithoutExt}`: the current file name without ext.
 
     Default value is `Y-MM-DD-HH-mm-ss`.
+    
+    Note that characters can be escaped in the format string by wrapping them in sqaure brackets such as `[image-]Y-MM-DD-HH-mm-ss`.
 
 - `pasteImage.path`
 
