@@ -33,7 +33,7 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
 
     Default value is `Y-MM-DD-HH-mm-ss`.
     
-    Note that characters can be escaped in the format string by wrapping them in sqaure brackets such as `[image-]Y-MM-DD-HH-mm-ss`.
+    Note that characters can be escaped in the format string by wrapping them in square brackets such as `[image-]Y-MM-DD-HH-mm-ss`.
 
 - `pasteImage.path`
 
