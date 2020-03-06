@@ -101,8 +101,6 @@ The image will will be saved, defulting to the folder containing the file curren
     - `${currentFileName}`: the current file name with ext.
     - `${currentFileNameWithoutExt}`: the current file name without ext.
 
-    Default is `""`.
-
 - `pasteImage.insertPattern`
 
     The pattern that is used when creating the markdown image reference. Defaults to `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
