@@ -94,7 +94,7 @@ class Paster {
         let fileUri = editor.document.uri;
         if (!fileUri) return;
         if (fileUri.scheme === 'untitled') {
-            Logger.showInformationMessage('Before paste image, you need to save current edit file first.');
+            Logger.showInformationMessage('Before pasting the image, you need to save current file first.');
             return;
         }
         let filePath = fileUri.fsPath;
@@ -105,7 +105,7 @@ class Paster {
         var selection = editor.selection;
         var selectText = editor.document.getText(selection);
         if (selectText && /[\\:*?<>|]/.test(selectText)) {
-            Logger.showInformationMessage('Your selection is not a valid file name!');
+            Logger.showInformationMessage('Your selection is not a valid filename!');
             return;
         }
 
@@ -181,7 +181,7 @@ class Paster {
             this.saveClipboardImageToFileAndGetPath(imagePath, (imagePath, imagePathReturnByScript) => {
                 if (!imagePathReturnByScript) return;
                 if (imagePathReturnByScript === 'no image') {
-                    Logger.showInformationMessage('There is not a image in clipboard.');
+                    Logger.showInformationMessage('There is not an image in the clipboard.');
                     return;
                 }
 
@@ -282,7 +282,7 @@ class Paster {
                     if (stats.isDirectory()) {
                         resolve(imagePath);
                     } else {
-                        reject(new PluginError(`The image dest directory '${imageDir}' is a file. please check your 'pasteImage.path' config.`))
+                        reject(new PluginError(`The image dest directory '${imageDir}' is a file. Please check your 'pasteImage.path' config.`))
                     }
                 } else if (err.code == "ENOENT") {
                     fse.ensureDir(imageDir, (err) => {
@@ -328,7 +328,7 @@ class Paster {
             ]);
             powershell.on('error', function (e) {
                 if (e.code == "ENOENT") {
-                    Logger.showErrorMessage(`The powershell command is not in you PATH environment variables.Please add it and retry.`);
+                    Logger.showErrorMessage(`The powershell command is not in you PATH environment variables. Please add it and retry.`);
                 } else {
                     Logger.showErrorMessage(e);
                 }

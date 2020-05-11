@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.4 (January 23, 2018)
+
+- Fix: paste image get blank image issue (windows)
+
 ## 1.0.3 (November 28, 2018)
 
 - Fix: paste translucent image get background issue (windows)
