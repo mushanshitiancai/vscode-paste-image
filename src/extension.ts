@@ -7,6 +7,13 @@ import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
 
+import * as cloudinary from 'cloudinary';
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 class Logger {
     static channel: vscode.OutputChannel;
 
@@ -60,6 +67,8 @@ class Paster {
     static PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g;
     static PATH_VARIABLE_IMAGE_SYNTAX_PREFIX = /\$\{imageSyntaxPrefix\}/g;
     static PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX = /\$\{imageSyntaxSuffix\}/g;
+    static PATH_VARIABLE_IMAGE_WIDTH = /\$\{imageWidth\}/g;
+    static PATH_VARIABLE_IMAGE_HEIGHT = /\$\{imageHeight\}/g;
 
     static FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME = "onlyName";
     static FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH = "fullPath";
@@ -176,15 +185,23 @@ class Paster {
                     return;
                 }
 
-                imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
-
-                editor.edit(edit => {
-                    let current = editor.selection;
-
-                    if (current.isEmpty) {
-                        edit.insert(current.start, imagePath);
+                // upload to cloudinary
+                cloudinary.v2.uploader.upload(imagePath, (error, result) => {
+                    if (error) {
+                        console.error(error);
                     } else {
-                        edit.replace(current, imagePath);
+                        console.log(result);
+                        imagePath = result.secure_url;
+                        imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig, result.width, result.height);
+                        editor.edit(edit => {
+                            let current = editor.selection;
+        
+                            if (current.isEmpty) {
+                                edit.insert(current.start, imagePath);
+                            } else {
+                                edit.replace(current, imagePath);
+                            }
+                        });
                     }
                 });
             });
@@ -364,14 +381,14 @@ class Paster {
      * render the image file path dependen on file type
      * e.g. in markdown image file path will render to ![](path)
      */
-    public static renderFilePath(languageId: string, basePath: string, imageFilePath: string, forceUnixStyleSeparator: boolean, prefix: string, suffix: string): string {
-        if (basePath) {
-            imageFilePath = path.relative(basePath, imageFilePath);
-        }
+    public static renderFilePath(languageId: string, basePath: string, imageFilePath: string, forceUnixStyleSeparator: boolean, prefix: string, suffix: string, width: string, height: string): string {
+        // if (basePath) {
+        //     imageFilePath = path.relative(basePath, imageFilePath);
+        // }
 
-        if (forceUnixStyleSeparator) {
-            imageFilePath = upath.normalize(imageFilePath);
-        }
+        // if (forceUnixStyleSeparator) {
+        //     imageFilePath = upath.normalize(imageFilePath);
+        // }
 
         let originalImagePath = imageFilePath;
         let ext = path.extname(originalImagePath);
@@ -407,6 +424,8 @@ class Paster {
         result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath);
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName);
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_WIDTH, width);
+        result = result.replace(this.PATH_VARIABLE_IMAGE_HEIGHT, height);
 
         return result;
     }
