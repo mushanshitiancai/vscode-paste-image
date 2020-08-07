@@ -7,6 +7,13 @@ import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
 
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+}
+
 class Logger {
     static channel: vscode.OutputChannel;
 
@@ -72,6 +79,7 @@ class Paster {
     static forceUnixStyleSeparatorConfig: boolean;
     static encodePathConfig: string;
     static namePrefixConfig: string;
+    static uuidFilename: boolean;
     static nameSuffixConfig: string;
     static insertPatternConfig: string;
     static showFilePathConfirmInputBox: boolean;
@@ -131,6 +139,7 @@ class Paster {
         this.forceUnixStyleSeparatorConfig = !!this.forceUnixStyleSeparatorConfig;
         this.encodePathConfig = vscode.workspace.getConfiguration('pasteImage')['encodePath'];
         this.namePrefixConfig = vscode.workspace.getConfiguration('pasteImage')['namePrefix'];
+        this.uuidFilename = vscode.workspace.getConfiguration('pasteImage')['uuidFilename'];
         this.nameSuffixConfig = vscode.workspace.getConfiguration('pasteImage')['nameSuffix'];
         this.insertPatternConfig = vscode.workspace.getConfiguration('pasteImage')['insertPattern'];
         this.showFilePathConfirmInputBox = vscode.workspace.getConfiguration('pasteImage')['showFilePathConfirmInputBox'] || false;
@@ -203,11 +212,18 @@ class Paster {
         callback: (err, imagePath: string) => void) {
         // image file name
         let imageFileName = "";
-        if (!selectText) {
-            imageFileName = this.namePrefixConfig + moment().format(this.defaultNameConfig) + this.nameSuffixConfig + ".png";
+
+        if (this.uuidFilename) {
+            imageFileName = uuidv4();
         } else {
-            imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig + ".png";
+            if (!selectText) {
+                imageFileName = this.namePrefixConfig + moment().format(this.defaultNameConfig) + this.nameSuffixConfig;
+            }
+            else {
+                imageFileName = this.namePrefixConfig + selectText + this.nameSuffixConfig;
+            }
         }
+        imageFileName += ".png"
 
         let filePathOrName;
         if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH){
