@@ -215,11 +215,14 @@ class Paster {
         } else {
             filePathOrName = imageFileName;
         }
+        let selectionRange = [filePathOrName.length - imageFileName.length,
+                              filePathOrName.length - ".png".length];
 
         if (showFilePathConfirmInputBox) {
             vscode.window.showInputBox({
                 prompt: 'Please specify the filename of the image.',
-                value: filePathOrName
+                value: filePathOrName,
+                valueSelection: selectionRange
             }).then((result) => {
                 if (result) {
                     if (!result.endsWith('.png')) result += '.png';
