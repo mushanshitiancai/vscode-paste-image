@@ -1,4 +1,5 @@
 out
 node_modules
-npm-debug.log*
+.vscode-test/
+.vscode/
 *.vsix
