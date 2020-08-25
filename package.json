@@ -1,26 +1,26 @@
 {
   "name": "vscode-paste-image",
-  "displayName": "Paste Image",
-  "description": "paste image from clipboard directly",
-  "version": "1.0.4",
+  "displayName": "Paste Image (from local pc)",
+  "description": "paste image from local pc clipboard directly",
+  "version": "1.1.4",
   "engines": {
     "vscode": "^1.48.0"
   },
   "categories": [
     "Other"
   ],
-  "publisher": "mushan",
+  "publisher": "sakamoto66",
   "author": {
-    "name": "mushan",
-    "email": "mushanmail@126.com"
+    "name": "sakamoto66",
+    "email": "sakamoto0322+github@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
+    "url": "https://github.com/sakamoto66/vscode-paste-image.git"
   },
-  "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
+  "homepage": "https://github.com/sakamoto66/vscode-paste-image/blob/master/README.md",
   "bugs": {
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
+    "url": "https://github.com/sakamoto66/vscode-paste-image/issues"
   },
   "icon": "res/icon.png",
   "galleryBanner": {
@@ -34,6 +34,9 @@
     "paste image",
     "keybindings"
   ],
+  "extensionKind": [
+		"ui"
+	],
   "activationEvents": [
     "onCommand:vscode-paste-image.pasteImage",
     "onCommand:vscode-paste-image.createImage"
