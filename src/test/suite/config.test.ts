@@ -13,21 +13,13 @@ function sleep(time:number) {
         }, time);
     });
 }
-describe('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+describe('Extension Test Suite (config)', () => {
+	vscode.window.showInformationMessage('Start config tests.');
 	const conf = vscode.workspace.getConfiguration('pasteImage');
 	let rootDir:vscode.Uri; 
 	if(undefined !== vscode.workspace.workspaceFolders && 0 < vscode.workspace.workspaceFolders.length){
 		rootDir = vscode.workspace.workspaceFolders[0] && vscode.workspace.workspaceFolders[0].uri;
 	}
-
-	//let done:Function;
-	before(async () => {
-	//	done = await lock();
-	});
-	after(async () => {
-	//	done();
-	});
 
 	it('setup', async () => {
 		await conf.update('defaultName', "ss-mm-HH-Y-MM-DD");
