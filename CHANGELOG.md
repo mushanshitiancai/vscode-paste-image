@@ -1,5 +1,20 @@
 # Change Log
 
+## 1.1.0 (August 25, 2020)
+
+- Feature: Support Remote Development
+- Feature: Add `Paste image of clipboard` to editor context menu.
+- Feature: Add `Create image of clipboard` to explorer context menu.
+- Feature: Remove `basePath` configuration.
+- Feature: Remove `forceUnixStyleSeparator` configuration.
+- Feature: Remove `prefix` configuration.
+- Feature: Remove `suffix` configuration.
+- Feature: Remove `namePrefix` configuration.
+- Feature: Remove `nameSuffix` configuration.
+- Feature: Remove `encodePath` configuration.
+- Feature: Remove `insertPattern` configuration.
+- Feature: Remove `filePathConfirmInputBoxMode` configuration.
+
 ## 1.0.4 (January 23, 2018)
 
 - Fix: paste image get blank image issue (windows)

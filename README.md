@@ -4,11 +4,11 @@ Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
 **Support Mac/Windows/Linux!** And support config destination folder.
 
-![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
+![paste-image](./res/vscode-paste-image.gif)
 
 Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path before save:
 
-![confirm-inputbox](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/confirm-inputbox.png)
+![confirm-inputbox](./res/confirm-inputbox.png)
 
 ## Usage
 
@@ -44,152 +44,11 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
     - `${currentFileName}`: the current file name with ext.
     - `${currentFileNameWithoutExt}`: the current file name without ext.
 
-    Default value is `${currentFileDir}`.
-
-- `pasteImage.basePath`
-
-    The base path of image url.
-    
-    You can use variable:
-    
-    - `${currentFileDir}`: the path of directory that contain current editing file. 
-    - `${projectRoot}`: the path of the project opened in vscode.
-    - `${currentFileName}`: the current file name with ext.
-    - `${currentFileNameWithoutExt}`: the current file name without ext.
-
-    Default value is `${currentFileDir}`.
-
-- `pasteImage.forceUnixStyleSeparator`
-
-    Force set the file separator style to unix style. If set false, separator style will follow the system style. 
-    
-    Default is `true`.
-
-- `pasteImage.prefix`
-
-    The string prepend to the resolved image path before paste.
-
-    Default is `""`.
-
-- `pasteImage.suffix`
-
-    The string append to the resolved image path before paste.
-
-    Default is `""`.
-
-- `pasteImage.encodePath`
-
-    How to encode image path before insert to editor. Support options:
-
-    - `none`: do nothing, just insert image path to text
-    - `urlEncode`: url encode whole image path
-    - `urlEncodeSpace`: url encode only space character(space to %20)
-
-    Default is `urlEncodeSpace`.
-
-- `pasteImage.namePrefix`
-
-    The string prepend to the image file name.
-
-    You can use variable:
-    
-    - `${currentFileDir}`: the path of directory that contain current editing file. 
-    - `${projectRoot}`: the path of the project opened in vscode.
-    - `${currentFileName}`: the current file name with ext.
-    - `${currentFileNameWithoutExt}`: the current file name without ext.
-
-    Default is `""`.
-
-- `pasteImage.nameSuffix`
-
-    The string append to the image name.
-
-    You can use variable:
-    
-    - `${currentFileDir}`: the path of directory that contain current editing file. 
-    - `${projectRoot}`: the path of the project opened in vscode.
-    - `${currentFileName}`: the current file name with ext.
-    - `${currentFileNameWithoutExt}`: the current file name without ext.
-
-    Default is `""`.
-
-- `pasteImage.insertPattern`
-
-    The pattern of string that would be pasted to text.
-    
-    You can configure both the alt text and the file path.
-    For example, `![${imageFileNameWithoutExt}](${imageFilePath})` would add the file name as the alt text instead of the default (blank).
-    
-    You can use the following variables:
-
-    - `${imageFilePath}`: the image file path, with `pasteImage.prefix`, `pasteImage.suffix`, and url encoded.
-    - `${imageOriginalFilePath}`: the image file path.
-    - `${imageFileName}`:  the image file name with ext.
-    - `${imageFileNameWithoutExt}`: the image file name without ext.
-    - `${currentFileDir}`: the path of directory that contain current editing file. 
-    - `${projectRoot}`: the path of the project opened in vscode.
-    - `${currentFileName}`: the current file name with ext.
-    - `${currentFileNameWithoutExt}`: the current file name without ext.
-    - `${imageSyntaxPrefix}`: in markdown file it would be <code>![](</code>, in asciidoc file it would be <code>image::</code>, in other file it would be empty string
-    - `${imageSyntaxSuffix}`: in markdown file it would be <code>)</code>, in asciidoc file it would be <code>[]</code>, in other file it would be empty string
-
-    Default is `${imageSyntaxPrefix}${imageFilePath}${imageSyntaxSuffix}`.
+    Default value is `./`.
 
 - `pasteImage.showFilePathConfirmInputBox`
 
     Enabling this `boolean` setting will make Paste Image ask you to confirm the file path(or file name). This is useful if you want to change the file path of the image you are currently pasting. Default is `false`.
-
-- `pasteImage.filePathConfirmInputBoxMode`
-
-    - `fullPath`: show full path in inputBox, so you can change the path or name. Default value.
-    - `onlyName`: show only file name in inputBox, so it's easy to change name.
-
-## Config Example
-
-I use vscode to edit my hexo blog. The folder struct like this:
-
-```
-blog/source/_posts  (articles)
-blog/source/img     (images)
-```
-
-I want to save all image in `blog/source/img`, and insert image url to article. And hexo will generate `blog/source/` as the website root, so the image url should be like `/img/xxx.png`. So I can config pasteImage in `blog/.vscode/setting.json` like this:
-
-```
-"pasteImage.path": "${projectRoot}/source/img",
-"pasteImage.basePath": "${projectRoot}/source",
-"pasteImage.forceUnixStyleSeparator": true,
-"pasteImage.prefix": "/"
-```
-
-If you want to save image in separate directory:
-
-```
-"pasteImage.path": "${projectRoot}/source/img/${currentFileNameWithoutExt}",
-"pasteImage.basePath": "${projectRoot}/source",
-"pasteImage.forceUnixStyleSeparator": true,
-"pasteImage.prefix": "/"
-```
-
-If you want to save image with article name as prefix:
-
-```
-"pasteImage.namePrefix": "${currentFileNameWithoutExt}_",
-"pasteImage.path": "${projectRoot}/source/img",
-"pasteImage.basePath": "${projectRoot}/source",
-"pasteImage.forceUnixStyleSeparator": true,
-"pasteImage.prefix": "/"
-```
-
-If you want to use html in markdown:
-
-```
-"pasteImage.insertPattern": "<img>${imageFileName}</img>"
-"pasteImage.path": "${projectRoot}/source/img",
-"pasteImage.basePath": "${projectRoot}/source",
-"pasteImage.forceUnixStyleSeparator": true,
-"pasteImage.prefix": "/"
-```
 
 ## Format
 
@@ -206,8 +65,6 @@ When you editing a markdown, it will pasted as markdown image link format `![](i
 When you editing a asciidoc, it will pasted as asciidoc image link format `image::imagePath[]`.
 
 In other file, it just paste the image's path.
-
-Now you can use configuration `pasteImage.insertPattern` to config the format of file link and the alt text.
 
 ## Contact
 
@@ -237,25 +94,3 @@ If you have some any question or advice, Welcome to [issue](https://github.com/m
 
 The extension and source are licensed under the [MIT license](LICENSE.txt).
 
-## Donate
-
-If you like this plugin, you can donate to me to support me develop it better, thank you!
-
-PayPal:
-
-<a href="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
-
-支付宝:
-
-![alipay](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/alipay.png)
-
-微信支付:
-
-![weixin](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/weixin.png)
-
-Donator list：
-- 白色咖啡
-- Paul Egbert
-- CallOnISS
-- 亮亮
-- Shahid Iqbal
