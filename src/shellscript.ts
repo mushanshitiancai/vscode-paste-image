@@ -39,6 +39,7 @@ function getShellScript():ScriptRunner {
 
 interface ScriptRunner {
     saveImage(saveFile:vscode.Uri):Promise<void>;
+    runScript(script:string, parameters:string[]):Promise<string>;
 }
 
 
@@ -70,7 +71,7 @@ class Win32Script implements ScriptRunner {
         }
     }
 
-    private runScript(script:string, parameters:string[]): Promise<string> {
+    public runScript(script:string, parameters:string[]): Promise<string> {
         const scriptPath = path.join(__dirname, '../res/' + script);
         const shell = 'powershell';
         const command = [
@@ -117,7 +118,7 @@ class LinuxScript implements ScriptRunner {
         }
     }
 
-    private runScript(script:string, parameters:string[]): Promise<string> {
+    public runScript(script:string, parameters:string[]): Promise<string> {
         const scriptPath = path.join(__dirname, '../res/' + script);
         const shell = 'sh';
         const command = [scriptPath].concat(parameters);
@@ -157,7 +158,7 @@ class MacScript implements ScriptRunner {
         }
     }
 
-    private runScript(script:string, parameters:string[]): Promise<string> {
+    public runScript(script:string, parameters:string[]): Promise<string> {
         const scriptPath = path.join(__dirname, '../res/' + script);
         const shell = 'sh';
         const command = [scriptPath].concat(parameters);
