@@ -14,10 +14,12 @@ class Paster {
         const script = getShellScript();
         try {
             const stat = await vscode.workspace.fs.stat(output);
+            const predefinedVars = new PredefinedVars(output);
             if(2 !== stat.type){
                 output = vscode.Uri.joinPath(output, "../");
             }
-            const filename:string = PasterConfig.getImageFileName("");
+            let filename:string = PasterConfig.getImageFileName("");
+            filename = predefinedVars.replace(filename);
             const saveFile:vscode.Uri = vscode.Uri.joinPath(output, filename);
             await script.saveImage(saveFile);
             console.debug("save image: "+saveFile);
@@ -77,6 +79,7 @@ class PasteTarget {
         const filePath:string = getRelativePath(baseUri, imageUri);
         const predefinedVars = new PredefinedVars(baseUri);
         predefinedVars.set("relativePath", filePath);
+
         return predefinedVars.replace(tpl);
     }
     
@@ -85,8 +88,10 @@ class PasteTarget {
         baseUri = PasterConfig.getBasePath(baseUri);
 
         const content = this.getSelectText();
-        const filename = PasterConfig.getImageFileName(content);
-        
+        const predefinedVars = new PredefinedVars(this.editor.document.uri);
+        let filename = PasterConfig.getImageFileName(content);
+        filename = predefinedVars.replace(filename);
+
         return vscode.Uri.joinPath(baseUri, filename);
     }
 
