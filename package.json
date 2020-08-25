@@ -1,6 +1,6 @@
 {
   "name": "vscode-paste-image",
-  "displayName": "Paste Image (from local pc)",
+  "displayName": "Paste Image from local pc",
   "description": "paste image from local pc clipboard directly",
   "version": "1.1.0",
   "engines": {
