@@ -2,7 +2,7 @@
   "name": "vscode-paste-image",
   "displayName": "Paste Image to local pc",
   "description": "paste image from local pc clipboard directly",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "engines": {
     "vscode": "^1.40.0"
   },
