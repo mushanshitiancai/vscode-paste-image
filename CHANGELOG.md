@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.1.1 (August 26, 2020)
+## 1.1.2 (August 26, 2020)
 
 - Fix: Support vscode version 1.48.0 upper -> 1.40.0 upper
 
