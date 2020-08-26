@@ -1,10 +1,10 @@
 {
   "name": "vscode-paste-image",
-  "displayName": "Paste Image from local pc",
+  "displayName": "Paste Image to local pc",
   "description": "paste image from local pc clipboard directly",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engines": {
-    "vscode": "^1.48.0"
+    "vscode": "^1.40.0"
   },
   "categories": [
     "Other"
@@ -36,8 +36,8 @@
   ],
   "license": "SEE LICENSE IN LICENSE.txt",
   "extensionKind": [
-		"ui"
-	],
+    "ui"
+  ],
   "activationEvents": [
     "onCommand:vscode-paste-image.pasteImage",
     "onCommand:vscode-paste-image.createImage"
@@ -112,7 +112,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.0",
     "@types/node": "^14.0.27",
-    "@types/vscode": "^1.48.0",
+    "@types/vscode": "^1.40.0",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "eslint": "^7.6.0",
