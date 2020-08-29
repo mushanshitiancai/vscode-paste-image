@@ -21,7 +21,8 @@ class Paster {
             let filename:string = PasterConfig.getImageFileName("");
             filename = predefinedVars.replace(filename);
             const saveFile:vscode.Uri = vscode.Uri.joinPath(output, filename);
-            await script.saveImage(saveFile);
+            const imageData = await script.getBase64Image();
+            await this.saveImage(saveFile, imageData);
             console.debug("save image: "+saveFile);
         } catch(err){
             vscode.window.showErrorMessage(""+err);
@@ -41,10 +42,29 @@ class Paster {
                 if(!newPath){return;}
                 imageUri = newPath;
             }
-            await script.saveImage(imageUri);
+            const imageData = await script.getBase64Image();
+            await this.saveImage(imageUri, imageData);
             const context = target.getPasteImageText(imageUri);
             target.pasteText(context);
             console.debug("save image: "+imageUri);
+        } catch(err){
+            vscode.window.showErrorMessage(""+err);
+        }
+    }
+
+    public static async pasteBase64ImageOnEditor() {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {return;}
+        const target = new PasteTarget(editor);
+        const script = getShellScript();
+
+        try {
+            const imageUri = target.getImagePath();
+            const imageData = await script.getBase64Image();
+            const context = target.getPasteBase64ImageText(imageUri, imageData);
+            await target.pasteText(context[0]);
+            target.pasteEnd(context[1])
+            console.debug("paste base64 image");
         } catch(err){
             vscode.window.showErrorMessage(""+err);
         }
@@ -61,6 +81,15 @@ class Paster {
         };
         const inputVal = await vscode.window.showInputBox(options);
         return inputVal ? vscode.Uri.file(inputVal) : undefined;
+    }
+
+    private static async saveImage(saveFile:vscode.Uri, base64:string){
+        try {
+            const buff:Uint8Array = Buffer.from(base64, 'base64');
+            await vscode.workspace.fs.writeFile(saveFile, buff);
+        } catch(err){
+            throw new Error('faild save image of clipboard');
+        }
     }
 }
 
@@ -81,6 +110,19 @@ class PasteTarget {
         predefinedVars.set("relativePath", filePath);
 
         return predefinedVars.replace(tpl);
+    }
+
+    public getPasteBase64ImageText(imageUri:vscode.Uri, base64:string):string[] {
+        const baseUri = this.getBaseUri();
+        const lang = this.editor.document.languageId;
+        const tpls = PasterConfig.getPasteBase64Template(lang);
+        
+        const filePath:string = path.basename(imageUri.fsPath);
+        const predefinedVars = new PredefinedVars(baseUri);
+        predefinedVars.set("relativePath", filePath);
+        predefinedVars.set("base64", base64);
+
+        return tpls.map(t => predefinedVars.replace(t));
     }
     
     public getImagePath():vscode.Uri {
@@ -114,7 +156,7 @@ class PasteTarget {
     }
 
     public pasteText(context:string){
-        this.editor.edit(edit => {
+        return this.editor.edit(edit => {
             const current = this.editor.selection;
 
             if (current.isEmpty) {
@@ -122,6 +164,13 @@ class PasteTarget {
             } else {
                 edit.replace(current, context);
             }
+        });
+    }
+    
+    public pasteEnd(context:string){
+        return this.editor.edit(edit => {
+            const pt = new vscode.Position(this.editor.document.lineCount, 0);
+            edit.insert(pt, context);
         });
     }
 }

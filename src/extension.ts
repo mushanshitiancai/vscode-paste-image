@@ -13,6 +13,10 @@ export function activate(context: vscode.ExtensionContext) {
 			Paster.pasteImageOnEditor();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand(
+		'vscode-paste-image.pasteBase64Image', () => {
+			Paster.pasteBase64ImageOnEditor();
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand(
         'vscode-paste-image.createImage', (uri:vscode.Uri) => {
             Paster.pasteImageOnWorkspace(uri);
 	}));

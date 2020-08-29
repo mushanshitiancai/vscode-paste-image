@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.6 (August 29, 2020)
+
+- Feature: Add `Paste base64 image of clipboard` to editor context menu.
+- Fix: The command to be executed was incorrect. `Paste image of clipboard` to editor context menu.
+
 ## 1.1.5 (August 26, 2020)
 
 - Fix: Support vscode version 1.48.0 upper -> 1.40.0 upper

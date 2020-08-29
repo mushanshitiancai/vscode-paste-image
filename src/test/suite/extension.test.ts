@@ -31,6 +31,15 @@ describe('Extension Test Suite (command)', () => {
 		editor.document.save();
 	}).timeout(10000);
 
+	it('command vscode-paste-image.pasteBase64Image test', async () => {
+		const fpath = vscode.Uri.joinPath(rootDir, "sample.md");
+		const buff = (new TextEncoder).encode('sample')
+		await vscode.workspace.fs.writeFile(fpath, buff);
+		const editor = await vscode.window.showTextDocument(fpath, { preview: false });
+		await vscode.commands.executeCommand("vscode-paste-image.pasteBase64Image");
+		editor.document.save();
+	}).timeout(10000);
+
 	it('command vscode-paste-image.createImage test', async () => {
 		await vscode.commands.executeCommand("vscode-paste-image.createImage", rootDir);
 	}).timeout(10000);

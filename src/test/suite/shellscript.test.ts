@@ -18,15 +18,16 @@ describe('Extension Test Suite (shellscript)', () => {
 		const base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNWRHWFIAAAAMSURBVBhXY2BgYAAAAAQAAVzN/2kAAAAASUVORK5CYII="
 		const sh = "../src/test/win32 _test_set_clipboard_image.ps1";
 		await script.runScript(sh, [base64]);
-		const file:vscode.Uri = vscode.Uri.joinPath(rootDir, "sample.png");
-		await script.saveImage(file);
+		const file = vscode.Uri.joinPath(rootDir, "sample.png");
+		const output = await script.getBase64Image();
+		//assert.equal(base64, output);
 	}).timeout(10000);
 
 	it('saveImage false', async () => {
 		await vscode.env.clipboard.writeText('a');
-		const file:vscode.Uri = vscode.Uri.joinPath(rootDir, "sample.png");
+		const file = vscode.Uri.joinPath(rootDir, "sample.png");
 		try{
-			await script.saveImage(file);
+			await script.getBase64Image();
 			assert.fail();
 		}catch(err){
 			assert.equal(""+err, 'Error: image of clipboard is empty');

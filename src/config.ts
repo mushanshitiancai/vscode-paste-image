@@ -39,6 +39,29 @@ class PasterConfig {
         });
         return tpl ? tpl : "${relativePath}";
     }
+
+    public static getPasteBase64Template(languageId: string): string[] {
+        let tpls:Map<string, string[]> = new Map();
+        tpls.set("markdown", [
+            "![][${relativePath}]",
+            "\n[${relativePath}]:data:image/png;base64,${base64}\n"
+        ]);
+        tpls.set("asciidoc", [
+            "image::data:image/png;base64,${base64}[]",
+            ""
+        ]);
+
+        let tpl:string[]|undefined;
+        tpls.forEach( (val, key) => {
+            if(key == languageId){
+                tpl = val;
+            }
+        });
+        return tpl||[
+            "data:image/png;base64,${base64}",
+            ""
+        ];
+    }
 }
 
 class PredefinedVars {

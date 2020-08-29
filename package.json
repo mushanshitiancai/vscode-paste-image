@@ -2,7 +2,7 @@
   "name": "vscode-paste-image",
   "displayName": "Paste Image to local pc",
   "description": "paste image from local pc clipboard directly",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "engines": {
     "vscode": "^1.40.0"
   },
@@ -42,6 +42,7 @@
   ],
   "activationEvents": [
     "onCommand:vscode-paste-image.pasteImage",
+    "onCommand:vscode-paste-image.pasteBase64Image",
     "onCommand:vscode-paste-image.createImage"
   ],
   "main": "./out/extension.js",
@@ -73,6 +74,10 @@
         "title": "Paste image of clipboard"
       },
       {
+        "command": "vscode-paste-image.pasteBase64Image",
+        "title": "Paste base64 image of clipboard"
+      },
+      {
         "command": "vscode-paste-image.createImage",
         "title": "Create image from clipboard"
       }
@@ -93,7 +98,11 @@
       ],
       "editor/context": [
         {
-          "command": "vscode-paste-image.createImage",
+          "command": "vscode-paste-image.pasteImage",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "vscode-paste-image.pasteBase64Image",
           "when": "editorTextFocus"
         }
       ]

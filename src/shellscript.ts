@@ -1,7 +1,6 @@
 'use strict';
 import * as path from 'path';
 import {spawn, ChildProcess} from 'child_process';
-import * as vscode from 'vscode';
 
 function executeCommand(shell:string, options: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -38,13 +37,12 @@ function getShellScript():ScriptRunner {
 }
 
 interface ScriptRunner {
-    saveImage(saveFile:vscode.Uri):Promise<void>;
+    getBase64Image():Promise<string>;
     runScript(script:string, parameters:string[]):Promise<string>;
 }
 
-
 class Win32Script implements ScriptRunner {
-    public async saveImage(saveFile:vscode.Uri) {
+    public async getBase64Image() {
         const script = "win32.ps1";
         let stdout;
         try {
@@ -62,13 +60,7 @@ class Win32Script implements ScriptRunner {
         if(data === 'no image') {
             throw new Error('image of clipboard is empty');
         }
-
-        try {
-            const buff:Uint8Array = Buffer.from(data, 'base64');
-            await vscode.workspace.fs.writeFile(saveFile, buff);
-        } catch(err){
-            throw new Error('faild save image of clipboard');
-        }
+        return data;
     }
 
     public runScript(script:string, parameters:string[]): Promise<string> {
@@ -87,7 +79,7 @@ class Win32Script implements ScriptRunner {
 }
 
 class LinuxScript implements ScriptRunner {
-    public async saveImage(saveFile:vscode.Uri) {
+    public async getBase64Image() {
         const script = "linux.sh";
         let stdout;
         try {
@@ -109,13 +101,7 @@ class LinuxScript implements ScriptRunner {
         if(data === 'no image') {
             throw new Error('image of clipboard is empty');
         }
-
-        try {
-            const buff:Uint8Array = Buffer.from(data, 'base64');
-            await vscode.workspace.fs.writeFile(saveFile, buff);
-        } catch(err){
-            throw new Error('faild save image of clipboard');
-        }
+        return data;
     }
 
     public runScript(script:string, parameters:string[]): Promise<string> {
@@ -127,7 +113,7 @@ class LinuxScript implements ScriptRunner {
 }
 
 class MacScript implements ScriptRunner {
-    public async saveImage(saveFile:vscode.Uri) {
+    public async getBase64Image() {
         const script = "mac.sh";
         let stdout;
         try {
@@ -149,13 +135,7 @@ class MacScript implements ScriptRunner {
         if(data === 'no image') {
             throw new Error('image of clipboard is empty');
         }
-
-        try {
-            const buff:Uint8Array = Buffer.from(data, 'base64');
-            await vscode.workspace.fs.writeFile(saveFile, buff);
-        } catch(err){
-            throw new Error('faild save image of clipboard');
-        }
+        return data;
     }
 
     public runScript(script:string, parameters:string[]): Promise<string> {
