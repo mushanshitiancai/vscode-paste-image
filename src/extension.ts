@@ -298,16 +298,34 @@ class Paster {
             if (!powershellExisted) {
                 command = "powershell"
             }
+            // Adapted from https://github.com/octan3/img-clipboard-dump/blob/master/dump-clipboard-png.ps1
+            let script = `$imagePath = "${imagePath}"
 
+Add-Type -Assembly PresentationCore
+$img = [Windows.Clipboard]::GetImage()
+
+if ($img -eq $null) {
+    "no image"
+    Exit 1
+}
+
+$fcb = new-object Windows.Media.Imaging.FormatConvertedBitmap($img, [Windows.Media.PixelFormats]::Rgb24, $null, 0)
+$stream = [IO.File]::Open($imagePath, "OpenOrCreate")
+$encoder = New-Object Windows.Media.Imaging.PngBitmapEncoder
+$encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($fcb)) | out-null
+$encoder.Save($stream) | out-null
+$stream.Dispose() | out-null
+
+$imagePath`
+            // TS refuses to compile Buffer.from
+            const encoded = (Buffer as any).from(script, 'utf16le').toString('base64');
             const powershell = spawn(command, [
                 '-noprofile',
                 '-noninteractive',
                 '-nologo',
                 '-sta',
-                '-executionpolicy', 'unrestricted',
                 '-windowstyle', 'hidden',
-                '-file', scriptPath,
-                imagePath
+                '-EncodedCommand', encoded
             ]);
             powershell.on('error', function (e) {
                 if (e.code == "ENOENT") {
