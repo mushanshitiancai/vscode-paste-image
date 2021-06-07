@@ -103,6 +103,11 @@
           "default": false,
           "description": "Set to true if you want to be able to change the file path or name prior to saving the file to disk"
         },
+        "pasteImage.uuidFilename": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set to true if you want the filename to be random uuid"
+        },
         "pasteImage.filePathConfirmInputBoxMode": {
           "type": "string",
           "enum": [
@@ -143,5 +148,11 @@
   "devDependencies": {
     "typescript": "^1.8.5",
     "vscode": "^0.11.0"
-  }
+  },
+  "__metadata": {
+    "id": "ffaf4ec8-f001-4f02-b671-705ecf079cde",
+    "publisherId": "f66fd94c-5d57-438e-9d46-cd35dbfdd5c2",
+    "publisherDisplayName": "mushan"
+  },
+  "__npminstall_done": false
 }
