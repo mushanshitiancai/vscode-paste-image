@@ -354,6 +354,9 @@ class Paster {
                 if (result == "no xclip") {
                     Logger.showInformationMessage('You need to install xclip command first.');
                     return;
+                } else if (result == "no wl-paste") {
+                    Logger.showInformationMessage('You need to install wl-paste command first.');
+                    return;
                 }
                 cb(imagePath, result);
             });
