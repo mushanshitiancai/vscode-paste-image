@@ -58,6 +58,7 @@ class Paster {
     static PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH = /\$\{imageOriginalFilePath\}/g;
     static PATH_VARIABLE_IMAGE_FILE_NAME = /\$\{imageFileName\}/g;
     static PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT = /\$\{imageFileNameWithoutExt\}/g;
+    static NEW_LINE_PLACEHOLDER_TEXT = /\$\{newLine}/g
     static PATH_VARIABLE_IMAGE_SYNTAX_PREFIX = /\$\{imageSyntaxPrefix\}/g;
     static PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX = /\$\{imageSyntaxSuffix\}/g;
 
@@ -407,6 +408,7 @@ class Paster {
         result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath);
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName);
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
+        result = result.replace(this.NEW_LINE_PLACEHOLDER_TEXT, "\n");
 
         return result;
     }
