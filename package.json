@@ -56,7 +56,7 @@
         "pasteImage.forceUnixStyleSeparator": {
           "type": "boolean",
           "default": true,
-          "description": "Force set the file separator styel to unix style. If set false, separator styel will follow the system style."
+          "description": "Force set the file separator styel to unix style. If set false, separator style will follow the system style."
         },
         "pasteImage.prefix": {
           "type": "string",
