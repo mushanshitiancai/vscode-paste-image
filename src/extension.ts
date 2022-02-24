@@ -17,12 +17,12 @@ class Logger {
         }
     }
 
-    static showInformationMessage(message: string, ...items: string[]): Thenable<string> {
+    static showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         this.log(message);
         return vscode.window.showInformationMessage(message, ...items);
     }
 
-    static showErrorMessage(message: string, ...items: string[]): Thenable<string> {
+    static showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         this.log(message);
         return vscode.window.showErrorMessage(message, ...items);
     }
@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
         try {
             Paster.paste();
-        } catch (e) {
+        } catch (e: any) {
             Logger.showErrorMessage(e)
         }
     });
@@ -137,12 +137,12 @@ class Paster {
         this.filePathConfirmInputBoxMode = vscode.workspace.getConfiguration('pasteImage')['filePathConfirmInputBoxMode'];
 
         // replace variable in config
-        this.defaultNameConfig = this.replacePathVariable(this.defaultNameConfig, projectPath, filePath, (x) => `[${x}]`);
-        this.folderPathConfig = this.replacePathVariable(this.folderPathConfig, projectPath, filePath);
-        this.basePathConfig = this.replacePathVariable(this.basePathConfig, projectPath, filePath);
-        this.namePrefixConfig = this.replacePathVariable(this.namePrefixConfig, projectPath, filePath);
-        this.nameSuffixConfig = this.replacePathVariable(this.nameSuffixConfig, projectPath, filePath);
-        this.insertPatternConfig = this.replacePathVariable(this.insertPatternConfig, projectPath, filePath);
+        this.defaultNameConfig = this.replacePathVariable(this.defaultNameConfig, projectPath as string, filePath, (x) => `[${x}]`);
+        this.folderPathConfig = this.replacePathVariable(this.folderPathConfig, projectPath as string, filePath);
+        this.basePathConfig = this.replacePathVariable(this.basePathConfig, projectPath as string, filePath);
+        this.namePrefixConfig = this.replacePathVariable(this.namePrefixConfig, projectPath as string, filePath);
+        this.nameSuffixConfig = this.replacePathVariable(this.nameSuffixConfig, projectPath as string, filePath);
+        this.insertPatternConfig = this.replacePathVariable(this.insertPatternConfig, projectPath as string, filePath);
 
         // "this" is lost when coming back from the callback, thus we need to store it here.
         const instance = this;
@@ -153,23 +153,23 @@ class Paster {
                 if (existed) {
                     Logger.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
                         if (choose != 'Replace') return;
-                        
-                        instance.saveAndPaste(editor, imagePath);
+
+                        instance.saveAndPaste(editor as vscode.TextEditor, imagePath);
                     });
                 } else {
-                    instance.saveAndPaste(editor, imagePath);
+                    instance.saveAndPaste(editor as vscode.TextEditor, imagePath);
                 }
-            } catch (err) {
+            } catch (err: any) {
                 Logger.showErrorMessage(`fs.existsSync(${imagePath}) fail. message=${err.message}`);
                 return;
             }
         });
     }
 
-    public static saveAndPaste(editor: vscode.TextEditor, imagePath) {
+    public static saveAndPaste(editor: vscode.TextEditor, imagePath: string) {
         this.createImageDirWithImagePath(imagePath).then(imagePath => {
             // save image and insert to current edit file
-            this.saveClipboardImageToFileAndGetPath(imagePath, (imagePath, imagePathReturnByScript) => {
+            this.saveClipboardImageToFileAndGetPath(imagePath as string, (imagePath, imagePathReturnByScript) => {
                 if (!imagePathReturnByScript) return;
                 if (imagePathReturnByScript === 'no image') {
                     Logger.showInformationMessage('There is not an image in the clipboard.');
@@ -190,7 +190,7 @@ class Paster {
             });
         }).catch(err => {
             if (err instanceof PluginError) {
-                Logger.showErrorMessage(err.message);
+                Logger.showErrorMessage(err.message as string);
             } else {
                 Logger.showErrorMessage(`Failed make folder. message=${err.message}`);
             }
@@ -198,9 +198,9 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string, 
+    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string,
         showFilePathConfirmInputBox: boolean, filePathConfirmInputBoxMode: string,
-        callback: (err, imagePath: string) => void) {
+        callback: (err: any, imagePath: string) => void) {
         // image file name
         let imageFileName = "";
         if (!selectText) {
@@ -210,7 +210,7 @@ class Paster {
         }
 
         let filePathOrName;
-        if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH){
+        if (filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH) {
             filePathOrName = makeImagePath(imageFileName);
         } else {
             filePathOrName = imageFileName;
@@ -223,8 +223,8 @@ class Paster {
             }).then((result) => {
                 if (result) {
                     if (!result.endsWith('.png')) result += '.png';
-                    
-                    if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME){
+
+                    if (filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME) {
                         result = makeImagePath(result);
                     }
 
@@ -237,7 +237,7 @@ class Paster {
             return;
         }
 
-        function makeImagePath(fileName) {
+        function makeImagePath(fileName: string) {
             // image output path
             let folderPath = path.dirname(filePath);
             let imagePath = "";
@@ -268,7 +268,7 @@ class Paster {
                         reject(new PluginError(`The image dest directory '${imageDir}' is a file. Please check your 'pasteImage.path' config.`))
                     }
                 } else if (err.code == "ENOENT") {
-                    fse.ensureDir(imageDir, (err) => {
+                    fse.ensureDir(imageDir, (err: any) => {
                         if (err) {
                             reject(err);
                             return;
@@ -285,7 +285,7 @@ class Paster {
     /**
      * use applescript to save image from clipboard and get file path
      */
-    private static saveClipboardImageToFileAndGetPath(imagePath, cb: (imagePath: string, imagePathFromScript: string) => void) {
+    private static saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string) => void) {
         if (!imagePath) return;
 
         let platform = process.platform;
@@ -309,7 +309,7 @@ class Paster {
                 '-file', scriptPath,
                 imagePath
             ]);
-            powershell.on('error', function (e) {
+            powershell.on('error', function (e: any) {
                 if (e.code == "ENOENT") {
                     Logger.showErrorMessage(`The powershell command is not in you PATH environment variables. Please add it and retry.`);
                 } else {
@@ -328,7 +328,7 @@ class Paster {
             let scriptPath = path.join(__dirname, '../../res/mac.applescript');
 
             let ascript = spawn('osascript', [scriptPath, imagePath]);
-            ascript.on('error', function (e) {
+            ascript.on('error', function (e: any) {
                 Logger.showErrorMessage(e);
             });
             ascript.on('exit', function (code, signal) {
@@ -343,7 +343,7 @@ class Paster {
             let scriptPath = path.join(__dirname, '../../res/linux.sh');
 
             let ascript = spawn('sh', [scriptPath, imagePath]);
-            ascript.on('error', function (e) {
+            ascript.on('error', function (e: any) {
                 Logger.showErrorMessage(e);
             });
             ascript.on('exit', function (code, signal) {
@@ -411,7 +411,7 @@ class Paster {
         return result;
     }
 
-    public static replacePathVariable(pathStr: string, projectRoot: string, curFilePath: string, postFunction: (string) => string = (x) => x): string {
+    public static replacePathVariable(pathStr: string, projectRoot: string, curFilePath: string, postFunction: (arg0: string) => string = (x) => x): string {
         let currentFileDir = path.dirname(curFilePath);
         let ext = path.extname(curFilePath);
         let fileName = path.basename(curFilePath);
