@@ -1,6 +1,6 @@
 {
-  "name": "vscode-paste-image",
-  "displayName": "Paste Image",
+  "name": "vscode-paste-image-test",
+  "displayName": "Paste Image-test",
   "description": "paste image from clipboard directly",
   "version": "1.0.4",
   "publisher": "mushan",
@@ -111,6 +111,20 @@
           ],
           "default": "fullPath",
           "description": "Set the mode of file path confirm inputbox"
+        },
+        "pasteImage.azureIsUploadStorage": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set to true if you want to be able to upload the Azure storage blob"
+        },
+        "pasteImage.azureStorageConnectionString": {
+          "type": "string",
+          "description": "Your Azure Storage Connection String."
+        },
+        "pasteImage.azureStorageContainerName": {
+          "type": "string",
+          "default": "newContainerName",
+          "description": "Your Azure Storage Container Name."
         }
       }
     },
@@ -141,6 +155,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.8.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "14.x",
@@ -148,6 +163,7 @@
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "@vscode/test-electron": "^2.1.2",
+    "await-to-js": "^3.0.0",
     "eslint": "^8.9.0",
     "fs-extra": "^3.0.1",
     "moment": "^2.14.1",

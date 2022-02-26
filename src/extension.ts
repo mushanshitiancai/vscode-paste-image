@@ -6,6 +6,8 @@ import * as fse from 'fs-extra';
 import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
+import { BlobServiceClient } from '@azure/storage-blob';
+import to from 'await-to-js'
 
 class Logger {
     static channel: vscode.OutputChannel;
@@ -36,6 +38,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
         try {
+            Logger.showErrorMessage('qqq');
+
             Paster.paste();
         } catch (e: any) {
             Logger.showErrorMessage(e)
@@ -77,7 +81,14 @@ class Paster {
     static showFilePathConfirmInputBox: boolean;
     static filePathConfirmInputBoxMode: string;
 
+    static azureIsUploadStorage: boolean;
+    static azureStorageConnectionString: string;
+    static azureStorageContainerName: string;
+
     public static paste() {
+        Logger.showErrorMessage('eee');
+		vscode.window.showInformationMessage('qqqeee');
+
         // get current edit file path
         let editor = vscode.window.activeTextEditor;
         if (!editor) return;
@@ -124,6 +135,23 @@ class Paster {
             Logger.showErrorMessage(`The config pasteImage.path = '${this.basePathConfig}' is invalid. please check your config.`);
             return;
         }
+
+        // load azure config 
+        this.azureIsUploadStorage = vscode.workspace.getConfiguration('pasteImage')['azureIsUploadStorage'];
+        this.azureStorageConnectionString = vscode.workspace.getConfiguration('pasteImage')['azureStorageConnectionString'];
+        this.azureStorageContainerName = vscode.workspace.getConfiguration('pasteImage')['azureStorageContainerName'];
+
+        // if (this.azureIsUploadStorage === true) {
+        //     if (!this.azureStorageContainerName || this.azureStorageContainerName.length !== this.azureStorageContainerName.trim().length) {
+        //         Logger.showErrorMessage(`The config pasteImage.azureStorageContainerName = '${this.azureStorageContainerName}' is invalid. please check your config.`);
+        //         return;
+        //     }
+        //     if (!this.azureStorageConnectionString || this.azureStorageConnectionString.length !== this.azureStorageConnectionString.trim().length) {
+        //         Logger.showErrorMessage(`The config pasteImage.azureStorageConnectionString = '${this.azureStorageConnectionString}' is invalid. please check your config.`);
+        //         return;
+        //     }
+        // }
+
         // load other config
         this.prefixConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
         this.suffixConfig = vscode.workspace.getConfiguration('pasteImage')['suffix'];
@@ -147,6 +175,12 @@ class Paster {
         // "this" is lost when coming back from the callback, thus we need to store it here.
         const instance = this;
         this.getImagePath(filePath, selectText, this.folderPathConfig, this.showFilePathConfirmInputBox, this.filePathConfirmInputBoxMode, function (err, imagePath) {
+            if(instance.azureIsUploadStorage === true)
+            {
+                AzureStorage_BlobUpload.Upload(instance.azureStorageConnectionString, instance.azureStorageContainerName);
+                return;
+            }
+return;
             try {
                 // is the file existed?
                 let existed = fs.existsSync(imagePath);
@@ -175,7 +209,6 @@ class Paster {
                     Logger.showInformationMessage('There is not an image in the clipboard.');
                     return;
                 }
-
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
                 editor.edit(edit => {
@@ -320,7 +353,9 @@ class Paster {
                 // console.log('exit', code, signal);
             });
             powershell.stdout.on('data', function (data: Buffer) {
+                debugger
                 cb(imagePath, data.toString().trim());
+                Logger.showErrorMessage(`stdout: ${data}`);
             });
         }
         else if (platform === 'darwin') {
@@ -428,4 +463,32 @@ class Paster {
 class PluginError {
     constructor(public message?: string) {
     }
+}
+
+class AzureStorage_BlobUpload {
+
+    public static async Upload(azure_Storage_Connection_String: string, containerName: string) {
+
+        containerName = containerName.toLowerCase();
+        const blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
+        const container = blobServiceClient.getContainerClient(containerName);
+
+        let [existContainerError, existContainerResult] = await to(container.exists());
+
+        if (existContainerResult !== true) {
+            let [createContainerError, createContainerResult] = await to(blobServiceClient.createContainer(containerName));
+
+            if (createContainerError) {
+                Logger.showErrorMessage('建立 Azure Container發生錯誤，Container名稱只可包含小寫字母、數字及連字號，且開頭必須是字母或數字。每個連字號前後都必須為非連字號的字元。名稱長度必須介於 3 到 63 個字元之間。');
+                return;
+            }
+        }
+
+
+        // List the blob(s) in the container.
+        // for await (const blob of containerClient.listBlobsFlat()) {
+        // 	console.log('\t', blob.name);
+        // }
+    }
+
 }
