@@ -2,9 +2,7 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "ES2015",
-		"lib": [
-			"ES2015"
-		],
+		"outDir": "out/src",
 		"sourceMap": true,
 		"rootDir": "src",
 		"strict": true   /* enable all strict type-checking options */

@@ -38,8 +38,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
         try {
-            Logger.showErrorMessage('qqq');
-
             Paster.paste();
         } catch (e: any) {
             Logger.showErrorMessage(e)
@@ -86,9 +84,6 @@ class Paster {
     static azureStorageContainerName: string;
 
     public static paste() {
-        Logger.showErrorMessage('eee');
-		vscode.window.showInformationMessage('qqqeee');
-
         // get current edit file path
         let editor = vscode.window.activeTextEditor;
         if (!editor) return;
@@ -141,16 +136,16 @@ class Paster {
         this.azureStorageConnectionString = vscode.workspace.getConfiguration('pasteImage')['azureStorageConnectionString'];
         this.azureStorageContainerName = vscode.workspace.getConfiguration('pasteImage')['azureStorageContainerName'];
 
-        // if (this.azureIsUploadStorage === true) {
-        //     if (!this.azureStorageContainerName || this.azureStorageContainerName.length !== this.azureStorageContainerName.trim().length) {
-        //         Logger.showErrorMessage(`The config pasteImage.azureStorageContainerName = '${this.azureStorageContainerName}' is invalid. please check your config.`);
-        //         return;
-        //     }
-        //     if (!this.azureStorageConnectionString || this.azureStorageConnectionString.length !== this.azureStorageConnectionString.trim().length) {
-        //         Logger.showErrorMessage(`The config pasteImage.azureStorageConnectionString = '${this.azureStorageConnectionString}' is invalid. please check your config.`);
-        //         return;
-        //     }
-        // }
+        if (this.azureIsUploadStorage === true) {
+            if (!this.azureStorageContainerName || this.azureStorageContainerName.length !== this.azureStorageContainerName.trim().length) {
+                Logger.showErrorMessage(`The config pasteImage.azureStorageContainerName = '${this.azureStorageContainerName}' is invalid. please check your config.`);
+                return;
+            }
+            if (!this.azureStorageConnectionString || this.azureStorageConnectionString.length !== this.azureStorageConnectionString.trim().length) {
+                Logger.showErrorMessage(`The config pasteImage.azureStorageConnectionString = '${this.azureStorageConnectionString}' is invalid. please check your config.`);
+                return;
+            }
+        }
 
         // load other config
         this.prefixConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
@@ -180,7 +175,7 @@ class Paster {
                 AzureStorage_BlobUpload.Upload(instance.azureStorageConnectionString, instance.azureStorageContainerName);
                 return;
             }
-return;
+
             try {
                 // is the file existed?
                 let existed = fs.existsSync(imagePath);
