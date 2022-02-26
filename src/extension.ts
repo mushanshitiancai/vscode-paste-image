@@ -8,6 +8,8 @@ import * as moment from 'moment';
 import * as upath from 'upath';
 import { BlobServiceClient } from '@azure/storage-blob';
 import to from 'await-to-js'
+import { Readable } from 'stream'
+import getStream from 'into-stream'
 
 class Logger {
     static channel: vscode.OutputChannel;
@@ -145,6 +147,14 @@ class Paster {
                 Logger.showErrorMessage(`The config pasteImage.azureStorageConnectionString = '${this.azureStorageConnectionString}' is invalid. please check your config.`);
                 return;
             }
+
+            try {
+                BlobServiceClient.fromConnectionString(this.azureStorageConnectionString);
+            }
+            catch (err: any) {
+                Logger.showErrorMessage(`Connect Azure Storage Service Fail. message=${err.message}. please check your config pasteImage.azureStorageConnectionString`);
+                return;
+            }
         }
 
         // load other config
@@ -170,12 +180,6 @@ class Paster {
         // "this" is lost when coming back from the callback, thus we need to store it here.
         const instance = this;
         this.getImagePath(filePath, selectText, this.folderPathConfig, this.showFilePathConfirmInputBox, this.filePathConfirmInputBoxMode, function (err, imagePath) {
-            if(instance.azureIsUploadStorage === true)
-            {
-                AzureStorage_BlobUpload.Upload(instance.azureStorageConnectionString, instance.azureStorageContainerName);
-                return;
-            }
-
             try {
                 // is the file existed?
                 let existed = fs.existsSync(imagePath);
@@ -198,12 +202,17 @@ class Paster {
     public static saveAndPaste(editor: vscode.TextEditor, imagePath: string) {
         this.createImageDirWithImagePath(imagePath).then(imagePath => {
             // save image and insert to current edit file
-            this.saveClipboardImageToFileAndGetPath(imagePath as string, (imagePath, imagePathReturnByScript) => {
+            this.saveClipboardImageToFileAndGetPath(imagePath as string, (imagePath, imagePathReturnByScript, imageByte) => {
                 if (!imagePathReturnByScript) return;
                 if (imagePathReturnByScript === 'no image') {
                     Logger.showInformationMessage('There is not an image in the clipboard.');
                     return;
                 }
+
+                // upload to azureStorage
+                if (this.azureIsUploadStorage === true)
+                    AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, path.basename(imagePath), imageByte);
+
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
                 editor.edit(edit => {
@@ -313,19 +322,21 @@ class Paster {
     /**
      * use applescript to save image from clipboard and get file path
      */
-    private static saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string) => void) {
+    private static saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string, imageByte: Buffer) => void) {
         if (!imagePath) return;
 
         let platform = process.platform;
         if (platform === 'win32') {
             // Windows
-            const scriptPath = path.join(__dirname, '../../res/pc.ps1');
+            const scriptPath = this.azureIsUploadStorage !== true ? path.join(__dirname, '../../res/pc.ps1') : path.join(__dirname, '../../res/pc-stream.ps1');
 
             let command = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
             let powershellExisted = fs.existsSync(command)
             if (!powershellExisted) {
                 command = "powershell"
             }
+
+            let imageBuffer: Buffer = Buffer.from([]);
 
             const powershell = spawn(command, [
                 '-noprofile',
@@ -348,9 +359,14 @@ class Paster {
                 // console.log('exit', code, signal);
             });
             powershell.stdout.on('data', function (data: Buffer) {
-                debugger
-                cb(imagePath, data.toString().trim());
-                Logger.showErrorMessage(`stdout: ${data}`);
+                if (data.toString().trim() !== 'no image') {
+                    // bufferArray.push(...data)
+                    imageBuffer = Buffer.concat([imageBuffer, data]);
+
+                }
+            });
+            powershell.stdout.on('close', function (data: Buffer) {
+                cb(imagePath, data.toString().trim(), imageBuffer);
             });
         }
         else if (platform === 'darwin') {
@@ -365,7 +381,7 @@ class Paster {
                 // console.log('exit',code,signal);
             });
             ascript.stdout.on('data', function (data: Buffer) {
-                cb(imagePath, data.toString().trim());
+                cb(imagePath, data.toString().trim(), Buffer.from([])); // todo
             });
         } else {
             // Linux 
@@ -385,7 +401,7 @@ class Paster {
                     Logger.showInformationMessage('You need to install xclip command first.');
                     return;
                 }
-                cb(imagePath, result);
+                cb(imagePath, result, Buffer.from([])); // todo
             });
         }
     }
@@ -462,28 +478,39 @@ class PluginError {
 
 class AzureStorage_BlobUpload {
 
-    public static async Upload(azure_Storage_Connection_String: string, containerName: string) {
+    public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, data: Buffer) {
 
         containerName = containerName.toLowerCase();
-        const blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
-        const container = blobServiceClient.getContainerClient(containerName);
 
-        let [existContainerError, existContainerResult] = await to(container.exists());
+        let blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
+
+        let container = blobServiceClient.getContainerClient(containerName);
+
+        let [_, existContainerResult] = await to(container.exists());
 
         if (existContainerResult !== true) {
-            let [createContainerError, createContainerResult] = await to(blobServiceClient.createContainer(containerName));
+            let [createContainerError, qq] = await to(blobServiceClient.createContainer(containerName));
 
             if (createContainerError) {
-                Logger.showErrorMessage('建立 Azure Container發生錯誤，Container名稱只可包含小寫字母、數字及連字號，且開頭必須是字母或數字。每個連字號前後都必須為非連字號的字元。名稱長度必須介於 3 到 63 個字元之間。');
+                Logger.showErrorMessage(`Create Azure Storage Container Fail. message=${createContainerError.message}`);
                 return;
             }
+
+            container = blobServiceClient.getContainerClient(containerName);
         }
+        const uploadOptions = { bufferSize: 1024 * 1024 * 1024, maxBuffers: 99999999 };
+        let blockBlobClient = container.getBlockBlobClient(fileName);
 
-
-        // List the blob(s) in the container.
-        // for await (const blob of containerClient.listBlobsFlat()) {
-        // 	console.log('\t', blob.name);
-        // }
+        // error todo
+        let [uploadError, uploadResult] = await to(blockBlobClient.uploadStream(getStream(data),
+            uploadOptions.bufferSize, uploadOptions.maxBuffers,
+            { blobHTTPHeaders: { blobContentType: "image/png" } }));
     }
 
+
+
+    // List the blob(s) in the container.
+    // for await (const blob of containerClient.listBlobsFlat()) {
+    // 	console.log('\t', blob.name);
+    // }
 }
