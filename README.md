@@ -209,6 +209,14 @@ If you want to use html in markdown:
 "pasteImage.prefix": "/"
 ```
 
+If you want to save image on azure storage blob
+
+```
+"pasteImage.azureIsUploadStorage": true
+"pasteImage.azureStorageConnectionString": "${yourAzureStorageConnectionString}",
+"pasteImage.azureStorageContainerName": "${azureStorageContainerName}",
+```
+
 ## Format
 
 ### File name format
