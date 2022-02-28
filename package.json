@@ -1,6 +1,6 @@
 {
-  "name": "vscode-paste-image-test",
-  "displayName": "Paste Image-test",
+  "name": "vscode-paste-image",
+  "displayName": "Paste Image",
   "description": "paste image from clipboard directly",
   "version": "1.0.4",
   "publisher": "mushan",
@@ -115,7 +115,7 @@
         "pasteImage.azureIsUploadStorage": {
           "type": "boolean",
           "default": false,
-          "description": "(Only Support Windows Now) Set to true if you want to be able to upload the Azure storage blob"
+          "description": "(Only Support Windows Now) Set to true if you want to be able to upload the Azure storage blob."
         },
         "pasteImage.azureStorageConnectionString": {
           "type": "string",
