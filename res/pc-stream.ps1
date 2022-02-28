@@ -16,11 +16,10 @@ if (-not $imagePath) {
 }
 
 $fcb = new-object Windows.Media.Imaging.FormatConvertedBitmap($img, [Windows.Media.PixelFormats]::Rgb24, $null, 0)
-[System.IO.MemoryStream] $stream = new-Object IO.MemoryStream
+$stream = new-Object IO.MemoryStream
 $encoder = New-Object Windows.Media.Imaging.PngBitmapEncoder
 $encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($fcb)) | out-null
 $encoder.Save($stream) | out-null
-$tmp = $stream.ToArray()
+$fileBytesBase64 = [Convert]::ToBase64String($stream.ToArray())
+$fileBytesBase64
 $stream.Dispose() | out-null
-
-$tmp

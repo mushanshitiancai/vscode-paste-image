@@ -110,12 +110,12 @@
             "onlyName"
           ],
           "default": "fullPath",
-          "description": "Set the mode of file path confirm inputbox"
+          "description": "Set the mode of file path confirm inputbox. (fullPath not support azureStorage feature)"
         },
         "pasteImage.azureIsUploadStorage": {
           "type": "boolean",
           "default": false,
-          "description": "Set to true if you want to be able to upload the Azure storage blob"
+          "description": "(Only Support Windows Now) Set to true if you want to be able to upload the Azure storage blob"
         },
         "pasteImage.azureStorageConnectionString": {
           "type": "string",

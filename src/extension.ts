@@ -202,7 +202,7 @@ class Paster {
     public static saveAndPaste(editor: vscode.TextEditor, imagePath: string) {
         this.createImageDirWithImagePath(imagePath).then(imagePath => {
             // save image and insert to current edit file
-            this.saveClipboardImageToFileAndGetPath(imagePath as string, (imagePath, imagePathReturnByScript, imageByte) => {
+            this.saveClipboardImageToFileAndGetPath(imagePath as string, async (imagePath, imagePathReturnByScript, fileBase64Str) => {
                 if (!imagePathReturnByScript) return;
                 if (imagePathReturnByScript === 'no image') {
                     Logger.showInformationMessage('There is not an image in the clipboard.');
@@ -210,8 +210,8 @@ class Paster {
                 }
 
                 // upload to azureStorage
-                if (this.azureIsUploadStorage === true)
-                    AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, path.basename(imagePath), imageByte);
+                if (process.platform === 'win32' && this.azureIsUploadStorage === true)
+                    imagePath = await AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, path.basename(imagePath), fileBase64Str) as string;
 
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
@@ -322,7 +322,7 @@ class Paster {
     /**
      * use applescript to save image from clipboard and get file path
      */
-    private static saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string, imageByte: Buffer) => void) {
+    private static saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string, fileBase64Str: string) => void) {
         if (!imagePath) return;
 
         let platform = process.platform;
@@ -336,7 +336,7 @@ class Paster {
                 command = "powershell"
             }
 
-            let imageBuffer: Buffer = Buffer.from([]);
+            let fileBase64Str: string = '';
 
             const powershell = spawn(command, [
                 '-noprofile',
@@ -360,13 +360,11 @@ class Paster {
             });
             powershell.stdout.on('data', function (data: Buffer) {
                 if (data.toString().trim() !== 'no image') {
-                    // bufferArray.push(...data)
-                    imageBuffer = Buffer.concat([imageBuffer, data]);
-
+                    fileBase64Str = fileBase64Str + data.toString();
                 }
             });
             powershell.stdout.on('close', function (data: Buffer) {
-                cb(imagePath, data.toString().trim(), imageBuffer);
+                cb(imagePath, data.toString().trim(), fileBase64Str);
             });
         }
         else if (platform === 'darwin') {
@@ -381,7 +379,7 @@ class Paster {
                 // console.log('exit',code,signal);
             });
             ascript.stdout.on('data', function (data: Buffer) {
-                cb(imagePath, data.toString().trim(), Buffer.from([])); // todo
+                cb(imagePath, data.toString().trim(), ''); // todo
             });
         } else {
             // Linux 
@@ -401,7 +399,7 @@ class Paster {
                     Logger.showInformationMessage('You need to install xclip command first.');
                     return;
                 }
-                cb(imagePath, result, Buffer.from([])); // todo
+                cb(imagePath, result, ''); // todo
             });
         }
     }
@@ -411,26 +409,6 @@ class Paster {
      * e.g. in markdown image file path will render to ![](path)
      */
     public static renderFilePath(languageId: string, basePath: string, imageFilePath: string, forceUnixStyleSeparator: boolean, prefix: string, suffix: string): string {
-        if (basePath) {
-            imageFilePath = path.relative(basePath, imageFilePath);
-        }
-
-        if (forceUnixStyleSeparator) {
-            imageFilePath = upath.normalize(imageFilePath);
-        }
-
-        let originalImagePath = imageFilePath;
-        let ext = path.extname(originalImagePath);
-        let fileName = path.basename(originalImagePath);
-        let fileNameWithoutExt = path.basename(originalImagePath, ext);
-
-        imageFilePath = `${prefix}${imageFilePath}${suffix}`;
-
-        if (this.encodePathConfig == "urlEncode") {
-            imageFilePath = encodeURI(imageFilePath)
-        } else if (this.encodePathConfig == "urlEncodeSpace") {
-            imageFilePath = imageFilePath.replace(/ /g, "%20");
-        }
 
         let imageSyntaxPrefix = "";
         let imageSyntaxSuffix = ""
@@ -449,10 +427,34 @@ class Paster {
         result = result.replace(this.PATH_VARIABLE_IMAGE_SYNTAX_PREFIX, imageSyntaxPrefix);
         result = result.replace(this.PATH_VARIABLE_IMAGE_SYNTAX_SUFFIX, imageSyntaxSuffix);
 
+        if (this.azureIsUploadStorage !== true) {
+            if (basePath) {
+                imageFilePath = path.relative(basePath, imageFilePath);
+            }
+
+            if (forceUnixStyleSeparator) {
+                imageFilePath = upath.normalize(imageFilePath);
+            }
+
+            let originalImagePath = imageFilePath;
+            let ext = path.extname(originalImagePath);
+            let fileName = path.basename(originalImagePath);
+            let fileNameWithoutExt = path.basename(originalImagePath, ext);
+
+            result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath);
+            result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName);
+            result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
+        }
+
+        imageFilePath = `${prefix}${imageFilePath}${suffix}`;
+
+        if (this.encodePathConfig == "urlEncode") {
+            imageFilePath = encodeURI(imageFilePath)
+        } else if (this.encodePathConfig == "urlEncodeSpace") {
+            imageFilePath = imageFilePath.replace(/ /g, "%20");
+        }
+
         result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_PATH, imageFilePath);
-        result = result.replace(this.PATH_VARIABLE_IMAGE_ORIGINAL_FILE_PATH, originalImagePath);
-        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME, fileName);
-        result = result.replace(this.PATH_VARIABLE_IMAGE_FILE_NAME_WITHOUT_EXT, fileNameWithoutExt);
 
         return result;
     }
@@ -478,18 +480,17 @@ class PluginError {
 
 class AzureStorage_BlobUpload {
 
-    public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, data: Buffer) {
-
+    public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, fileBase64Str: string) {
         containerName = containerName.toLowerCase();
 
         let blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
-
         let container = blobServiceClient.getContainerClient(containerName);
 
+        // check container exist
         let [_, existContainerResult] = await to(container.exists());
 
         if (existContainerResult !== true) {
-            let [createContainerError, qq] = await to(blobServiceClient.createContainer(containerName));
+            let [createContainerError, qq] = await to(blobServiceClient.createContainer(containerName, { access: 'blob' }));
 
             if (createContainerError) {
                 Logger.showErrorMessage(`Create Azure Storage Container Fail. message=${createContainerError.message}`);
@@ -498,19 +499,20 @@ class AzureStorage_BlobUpload {
 
             container = blobServiceClient.getContainerClient(containerName);
         }
-        const uploadOptions = { bufferSize: 1024 * 1024 * 1024, maxBuffers: 99999999 };
-        let blockBlobClient = container.getBlockBlobClient(fileName);
 
-        // error todo
-        let [uploadError, uploadResult] = await to(blockBlobClient.uploadStream(getStream(data),
-            uploadOptions.bufferSize, uploadOptions.maxBuffers,
-            { blobHTTPHeaders: { blobContentType: "image/png" } }));
+        // upload blob
+        let buffer = Buffer.from(fileBase64Str, 'base64');
+        let [uploadError, uploadResult] = await to(container.getBlockBlobClient(fileName).upload(buffer, buffer.byteLength, {
+            blobHTTPHeaders: {
+                blobContentType: "image/png"
+            }
+        }));
+
+        if (uploadError) {
+            Logger.showErrorMessage(`Upload Azure Storage Blob Fail. message=${uploadError.message}`);
+            return;
+        }
+
+        return uploadResult?._response.request.url as string;
     }
-
-
-
-    // List the blob(s) in the container.
-    // for await (const blob of containerClient.listBlobsFlat()) {
-    // 	console.log('\t', blob.name);
-    // }
 }
