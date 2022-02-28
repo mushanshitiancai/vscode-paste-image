@@ -110,7 +110,7 @@
             "onlyName"
           ],
           "default": "fullPath",
-          "description": "Set the mode of file path confirm inputbox. (fullPath not support azureStorage feature)"
+          "description": "Set the mode of file path confirm inputbox."
         },
         "pasteImage.azureIsUploadStorage": {
           "type": "boolean",
@@ -119,12 +119,12 @@
         },
         "pasteImage.azureStorageConnectionString": {
           "type": "string",
-          "description": "Your Azure Storage Connection String."
+          "description": "(Only Support Windows Now) Your Azure Storage Connection String."
         },
         "pasteImage.azureStorageContainerName": {
           "type": "string",
           "default": "newContainerName",
-          "description": "Your Azure Storage Container Name."
+          "description": "(Only Support Windows Now) Your Azure Storage Container Name."
         }
       }
     },

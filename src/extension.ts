@@ -211,7 +211,7 @@ class Paster {
 
                 // upload to azureStorage
                 if (process.platform === 'win32' && this.azureIsUploadStorage === true)
-                    imagePath = await AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, path.basename(imagePath), fileBase64Str) as string;
+                    imagePath = await AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, imagePath, fileBase64Str) as string;
 
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
@@ -295,8 +295,11 @@ class Paster {
      */
     private static createImageDirWithImagePath(imagePath: string) {
         return new Promise((resolve, reject) => {
-            let imageDir = path.dirname(imagePath);
+            if (process.platform === 'win32' && this.azureIsUploadStorage === true)
+                resolve(imagePath);
 
+            let imageDir = path.dirname(imagePath);
+       
             fs.stat(imageDir, (err, stats) => {
                 if (err == null) {
                     if (stats.isDirectory()) {
@@ -482,6 +485,8 @@ class AzureStorage_BlobUpload {
 
     public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, fileBase64Str: string) {
         containerName = containerName.toLowerCase();
+        fileName = path.normalize(fileName)
+        fileName = fileName.substr(fileName.indexOf('\\') + 1)
 
         let blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
         let container = blobServiceClient.getContainerClient(containerName);

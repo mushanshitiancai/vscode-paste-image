@@ -144,6 +144,24 @@ Now you can enable `pasteImage.showFilePathConfirmInputBox` to modify file path 
     - `fullPath`: show full path in inputBox, so you can change the path or name. Default value.
     - `onlyName`: show only file name in inputBox, so it's easy to change name.
 
+- `pasteImage.azureIsUploadStorage`
+
+    (Only Support Windows Now)
+    Enabling this `boolean` setting will upload image to azure storage blob. 
+    Default is `false`.
+
+- `pasteImage.azureStorageConnectionString`
+
+    (Only Support Windows Now)
+    Your Azure Storage Connection String.
+    References: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-nodejs#copy-your-credentials-from-the-azure-portal
+
+- `pasteImage.azureStorageContainerName`
+
+    (Only Support Windows Now)
+    Your Azure Storage Container Name.
+    Default is `newContainerName`.
+
 ## Config Example
 
 I use vscode to edit my hexo blog. The folder struct like this:
