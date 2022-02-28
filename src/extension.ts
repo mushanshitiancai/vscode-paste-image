@@ -328,7 +328,7 @@ class Paster {
         let platform = process.platform;
         if (platform === 'win32') {
             // Windows
-            const scriptPath = this.azureIsUploadStorage !== true ? path.join(__dirname, '../../res/pc.ps1') : path.join(__dirname, '../../res/pc-stream.ps1');
+            const scriptPath = this.azureIsUploadStorage !== true ? path.join(__dirname, '../../res/pc.ps1') : path.join(__dirname, '../../res/pc-base64.ps1');
 
             let command = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
             let powershellExisted = fs.existsSync(command)
