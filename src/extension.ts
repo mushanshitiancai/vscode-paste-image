@@ -518,6 +518,6 @@ class AzureStorage_BlobUpload {
             return;
         }
 
-        return uploadResult?._response.request.url as string;
+        return decodeURI(uploadResult?._response.request.url as string);
     }
 }
