@@ -85,6 +85,8 @@ class Paster {
     static azureStorageConnectionString: string;
     static azureStorageContainerName: string;
 
+    static isCloudPath: boolean;
+
     public static paste() {
         // get current edit file path
         let editor = vscode.window.activeTextEditor;
@@ -137,6 +139,8 @@ class Paster {
         this.azureIsUploadStorage = vscode.workspace.getConfiguration('pasteImage')['azureIsUploadStorage'];
         this.azureStorageConnectionString = vscode.workspace.getConfiguration('pasteImage')['azureStorageConnectionString'];
         this.azureStorageContainerName = vscode.workspace.getConfiguration('pasteImage')['azureStorageContainerName'];
+
+        this.isCloudPath = this.azureIsUploadStorage;
 
         if (this.azureIsUploadStorage === true) {
             if (!this.azureStorageContainerName || this.azureStorageContainerName.length !== this.azureStorageContainerName.trim().length) {
@@ -280,7 +284,7 @@ class Paster {
             let imagePath = "";
 
             // generate image path
-            if (path.isAbsolute(folderPathFromConfig)) {
+            if (path.isAbsolute(folderPathFromConfig) || Paster.isCloudPath === true) {
                 imagePath = path.join(folderPathFromConfig, fileName);
             } else {
                 imagePath = path.join(folderPath, folderPathFromConfig, fileName);
@@ -299,7 +303,7 @@ class Paster {
                 resolve(imagePath);
 
             let imageDir = path.dirname(imagePath);
-       
+
             fs.stat(imageDir, (err, stats) => {
                 if (err == null) {
                     if (stats.isDirectory()) {
@@ -485,8 +489,7 @@ class AzureStorage_BlobUpload {
 
     public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, fileBase64Str: string) {
         containerName = containerName.toLowerCase();
-        fileName = path.normalize(fileName)
-        fileName = fileName.substr(fileName.indexOf('\\') + 1)
+        fileName = fileName.replace(/\\/g,'/');
 
         let blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
         let container = blobServiceClient.getContainerClient(containerName);
@@ -518,6 +521,6 @@ class AzureStorage_BlobUpload {
             return;
         }
 
-        return decodeURI(uploadResult?._response.request.url as string);
+        return decodeURIComponent(uploadResult?._response.request.url as string);
     }
 }
