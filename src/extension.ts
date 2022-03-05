@@ -501,7 +501,7 @@ class AzureStorage_BlobUpload {
         let [_, existContainerResult] = await to(container.exists());
 
         if (existContainerResult !== true) {
-            let [createContainerError, qq] = await to(blobServiceClient.createContainer(containerName, { access: 'blob' }));
+            let [createContainerError, _] = await to(blobServiceClient.createContainer(containerName, { access: 'blob' }));
 
             if (createContainerError) {
                 Logger.showErrorMessage(`Create Azure Storage Container Fail. message=${createContainerError.message}`);
@@ -511,21 +511,16 @@ class AzureStorage_BlobUpload {
             container = blobServiceClient.getContainerClient(containerName);
         }
 
-        let i = 1;
         let isExistFile = false;
         for await (const blob of container.listBlobsFlat()) {
-            console.log(`Blob ${i++}: ${blob.name} Start`);
             if (blob.name == fileName) {
                 isExistFile = true;
-
                 break;
             }
-
-            console.log(`Blob ${i++}: ${blob.name} End`);
         }
 
         if (isExistFile === true) {
-            if (await Logger.showInformationMessage(`File ${fileName} existed On the Azure Storage Blob. Would you want to replace?`, 'Replace', 'Cancel') === "Replace") {
+            if (await Logger.showInformationMessage(`File ${fileName} existed on the Azure Storage Blob. Would you want to replace?`, 'Replace', 'Cancel') === "Replace") {
                 await container.getBlockBlobClient(fileName).delete();
                 return this.UploadFile(container, containerName, fileName, fileBase64Str);
             }
