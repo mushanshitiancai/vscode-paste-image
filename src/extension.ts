@@ -6,7 +6,7 @@ import * as fse from 'fs-extra';
 import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
-import { BlobServiceClient } from '@azure/storage-blob';
+import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import to from 'await-to-js'
 import { Readable } from 'stream'
 import getStream from 'into-stream'
@@ -216,6 +216,9 @@ class Paster {
                 // upload to azureStorage
                 if (process.platform === 'win32' && this.azureIsUploadStorage === true)
                     imagePath = await AzureStorage_BlobUpload.Upload(this.azureStorageConnectionString, this.azureStorageContainerName, imagePath, fileBase64Str) as string;
+
+                if (imagePath === undefined)
+                    return;
 
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathConfig, imagePath, this.forceUnixStyleSeparatorConfig, this.prefixConfig, this.suffixConfig);
 
@@ -489,7 +492,7 @@ class AzureStorage_BlobUpload {
 
     public static async Upload(azure_Storage_Connection_String: string, containerName: string, fileName: string, fileBase64Str: string) {
         containerName = containerName.toLowerCase();
-        fileName = fileName.replace(/\\/g,'/');
+        fileName = fileName.replace(/\\/g, '/');
 
         let blobServiceClient = BlobServiceClient.fromConnectionString(azure_Storage_Connection_String);
         let container = blobServiceClient.getContainerClient(containerName);
@@ -508,6 +511,33 @@ class AzureStorage_BlobUpload {
             container = blobServiceClient.getContainerClient(containerName);
         }
 
+        let i = 1;
+        let isExistFile = false;
+        for await (const blob of container.listBlobsFlat()) {
+            console.log(`Blob ${i++}: ${blob.name} Start`);
+            if (blob.name == fileName) {
+                isExistFile = true;
+
+                break;
+            }
+
+            console.log(`Blob ${i++}: ${blob.name} End`);
+        }
+
+        if (isExistFile === true) {
+            if (await Logger.showInformationMessage(`File ${fileName} existed On the Azure Storage Blob. Would you want to replace?`, 'Replace', 'Cancel') === "Replace") {
+                await container.getBlockBlobClient(fileName).delete();
+                return this.UploadFile(container, containerName, fileName, fileBase64Str);
+            }
+
+            return;
+        } else {
+            return this.UploadFile(container, containerName, fileName, fileBase64Str);
+
+        }
+    }
+
+    private static async UploadFile(container: ContainerClient, containerName: string, fileName: string, fileBase64Str: string) {
         // upload blob
         let buffer = Buffer.from(fileBase64Str, 'base64');
         let [uploadError, uploadResult] = await to(container.getBlockBlobClient(fileName).upload(buffer, buffer.byteLength, {
