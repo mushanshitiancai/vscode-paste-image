@@ -29,7 +29,7 @@
     "keybindings"
   ],
   "engines": {
-    "vscode": "^1.0.0"
+    "vscode": "^1.64.0"
   },
   "categories": [
     "Other"
@@ -110,7 +110,21 @@
             "onlyName"
           ],
           "default": "fullPath",
-          "description": "Set the mode of file path confirm inputbox"
+          "description": "Set the mode of file path confirm inputbox."
+        },
+        "pasteImage.azureIsUploadStorage": {
+          "type": "boolean",
+          "default": false,
+          "description": "(Only Support Windows Now) Set to true if you want to be able to upload the Azure storage blob."
+        },
+        "pasteImage.azureStorageConnectionString": {
+          "type": "string",
+          "description": "(Only Support Windows Now) Your Azure Storage Connection String."
+        },
+        "pasteImage.azureStorageContainerName": {
+          "type": "string",
+          "default": "newContainerName",
+          "description": "(Only Support Windows Now) Your Azure Storage Container Name."
         }
       }
     },
@@ -130,18 +144,31 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "copy-paste": "^1.2.0",
+    "@azure/storage-blob": "^12.8.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.64.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "@vscode/test-electron": "^2.1.2",
+    "await-to-js": "^3.0.0",
+    "eslint": "^8.9.0",
     "fs-extra": "^3.0.1",
+    "into-stream": "^7.0.0",
     "moment": "^2.14.1",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5",
     "upath": "^1.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^1.8.5",
-    "vscode": "^0.11.0"
   }
 }
