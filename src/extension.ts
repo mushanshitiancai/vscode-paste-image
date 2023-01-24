@@ -382,8 +382,10 @@ class Paster {
 
         if (this.encodePathConfig == "urlEncode") {
             imageFilePath = encodeURI(imageFilePath)
+            fileName = encodeURI(fileName)
         } else if (this.encodePathConfig == "urlEncodeSpace") {
             imageFilePath = imageFilePath.replace(/ /g, "%20");
+            fileName = fileName.replace(/ /g, "%20");
         }
 
         let imageSyntaxPrefix = "";
